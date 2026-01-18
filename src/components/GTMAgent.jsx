@@ -95,21 +95,20 @@ Be thorough, strategic, and practical. Draw on enterprise SaaS and AI product GT
     setIsLoading(true);
 
     try {
-      const response = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
-          max_tokens: 4000,
-          system: systemPrompt,
-          messages: [...messages, userMessage].map(msg => ({
-            role: msg.role,
-            content: msg.content
-          }))
-        })
-      });
+      const response = await fetch('/api/chat', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    systemPrompt: systemPrompt,
+    messages: [...messages, userMessage].map(msg => ({
+      role: msg.role,
+      content: msg.content
+    }))
+  })
+});
+
 
       const data = await response.json();
       const assistantMessage = data.content[0].text;

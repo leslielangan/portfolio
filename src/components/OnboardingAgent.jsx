@@ -2,18 +2,18 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Send, Loader2, Download, RefreshCw, Home as HomeIcon } from 'lucide-react';
 
-export default function GTMAgent() {
+export default function OnboardingAgent() {
   const navigate = useNavigate();
   const [messages, setMessages] = useState([
     {
       role: 'assistant',
-      content: "Hi! I'm your GTM Strategy Agent. I'll help you develop a comprehensive go-to-market strategy tailored to your product.\n\nTo get started, tell me about your product. What does it do, and who is it for?"
+      content: "Hi! I'm your Onboarding Agent. I'll help you design a personalized user onboarding experience that drives adoption and engagement.\n\nLet's start with the basics: What product or feature are you onboarding users to?"
     }
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [conversationComplete, setConversationComplete] = useState(false);
-  const [strategy, setStrategy] = useState(null);
+  const [onboardingPlan, setOnboardingPlan] = useState(null);
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -24,68 +24,77 @@ export default function GTMAgent() {
     scrollToBottom();
   }, [messages]);
 
-  const systemPrompt = `You are an expert GTM Strategy Agent built by Leslie, a VP of Product Marketing with 16+ years of experience in B2B tech, specializing in AI products.
+  const systemPrompt = `You are an expert Onboarding Strategy Agent built by Leslie, who has trained over 2,000 users on AI fundamentals and specializes in user adoption psychology.
 
-Your role is to conduct an intelligent, adaptive interview to gather information about the user's product, then generate a comprehensive go-to-market strategy.
+Your role is to conduct an intelligent interview to understand the product, users, and context, then generate a comprehensive, psychology-informed onboarding strategy.
 
 INTERVIEW PHASE:
-- Ask 5-7 strategic questions, one at a time
-- Adapt questions based on previous answers (e.g., if B2B, ask about decision-making units; if B2C, ask about acquisition channels)
-- Key areas to cover: product details, target market, competitive landscape, business model, resources/constraints, success metrics
-- Keep questions conversational and insightful
-- After gathering sufficient information, say "I have everything I need to create your GTM strategy. Give me a moment to put this together..." and then respond with ONLY the JSON structure below
+- Ask 5-7 thoughtful questions, one at a time
+- Adapt based on responses (technical vs non-technical users, AI product vs traditional software, B2B vs B2C)
+- Key areas: product complexity, user persona, learning preferences, barriers to adoption, success metrics, resources available
+- Focus on behavioral psychology and learning science
+- After gathering sufficient information, say "I have everything I need to create your onboarding strategy. Let me put this together..." and then respond with ONLY the JSON structure below
 
-STRATEGY GENERATION PHASE:
-When you have enough information, generate a comprehensive strategy as a JSON object with this EXACT structure (respond with ONLY this JSON, no other text):
+ONBOARDING PLAN GENERATION:
+When ready, generate a comprehensive plan as a JSON object with this EXACT structure (respond with ONLY this JSON, no other text):
 
 {
   "productName": "string",
-  "executiveSummary": "2-3 sentence overview",
-  "targetMarket": {
-    "primary": "description",
-    "secondary": "description",
-    "icp": "ideal customer profile details"
+  "userPersona": "description of target user",
+  "executiveSummary": "2-3 sentence overview of the onboarding approach",
+  "learningObjectives": {
+    "primary": "main goal users should achieve",
+    "secondary": ["supporting objective 1", "supporting objective 2"]
   },
-  "positioning": {
-    "valueProposition": "clear value prop",
-    "differentiation": "what makes this unique",
-    "messaging": "core message"
-  },
-  "goToMarketMotion": {
-    "model": "PLG/Sales-led/Hybrid/etc",
-    "rationale": "why this model"
-  },
-  "launchPhases": [
+  "adoptionBarriers": [
     {
-      "phase": "Phase 1: Foundation",
-      "timeline": "Months 1-2",
-      "objectives": ["objective 1", "objective 2"],
-      "tactics": ["tactic 1", "tactic 2"]
+      "barrier": "psychological or practical barrier",
+      "strategy": "how to overcome it"
     }
   ],
-  "channels": [
+  "onboardingFlow": [
     {
-      "channel": "channel name",
-      "priority": "Primary/Secondary",
-      "tactics": ["tactic 1", "tactic 2"]
+      "stage": "Stage name (e.g., Welcome & Orientation)",
+      "duration": "estimated time",
+      "objectives": ["what users learn/do"],
+      "tactics": [
+        {
+          "tactic": "specific action or touchpoint",
+          "rationale": "why this works psychologically"
+        }
+      ],
+      "successMetrics": ["how to measure completion/understanding"]
     }
   ],
+  "contentStrategy": {
+    "approach": "overall content philosophy",
+    "formats": [
+      {
+        "format": "format type (video, interactive, documentation, etc.)",
+        "when": "when to use it",
+        "why": "psychological rationale"
+      }
+    ]
+  },
+  "personalization": {
+    "segments": [
+      {
+        "segment": "user type",
+        "adaptations": ["how onboarding differs for this group"]
+      }
+    ]
+  },
   "metrics": {
-    "northStar": "primary metric",
-    "leading": ["indicator 1", "indicator 2"],
-    "lagging": ["indicator 1", "indicator 2"]
+    "engagement": ["metric 1", "metric 2"],
+    "competency": ["metric 1", "metric 2"],
+    "retention": ["metric 1", "metric 2"]
   },
-  "risks": [
-    {
-      "risk": "risk description",
-      "mitigation": "mitigation strategy"
-    }
-  ]
+  "timeline": "recommended rollout timeline"
 }
 
-Be thorough, strategic, and practical. Draw on enterprise SaaS and AI product GTM best practices.`;
+Draw on learning psychology, behavior change models, and AI adoption best practices. Be specific and actionable.`;
 
-  const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
 
@@ -95,15 +104,13 @@ Be thorough, strategic, and practical. Draw on enterprise SaaS and AI product GT
     setIsLoading(true);
 
     try {
-      const response = await fetch('https://api.anthropic.com/v1/messages', {
+      const response = await fetch('/api/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
-          max_tokens: 4000,
-          system: systemPrompt,
+          systemPrompt: systemPrompt,
           messages: [...messages, userMessage].map(msg => ({
             role: msg.role,
             content: msg.content
@@ -117,12 +124,12 @@ Be thorough, strategic, and practical. Draw on enterprise SaaS and AI product GT
       const jsonMatch = assistantMessage.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         try {
-          const strategyData = JSON.parse(jsonMatch[0]);
-          setStrategy(strategyData);
+          const planData = JSON.parse(jsonMatch[0]);
+          setOnboardingPlan(planData);
           setConversationComplete(true);
           setMessages(prev => [...prev, {
             role: 'assistant',
-            content: "✨ Your GTM strategy is ready! Review it below, and feel free to download it or start a new strategy."
+            content: "✨ Your onboarding strategy is ready! Review it below, download it, or start a new plan."
           }]);
         } catch (e) {
           setMessages(prev => [...prev, { role: 'assistant', content: assistantMessage }]);
@@ -144,78 +151,88 @@ Be thorough, strategic, and practical. Draw on enterprise SaaS and AI product GT
     setMessages([
       {
         role: 'assistant',
-        content: "Hi! I'm your GTM Strategy Agent. I'll help you develop a comprehensive go-to-market strategy tailored to your product.\n\nTo get started, tell me about your product. What does it do, and who is it for?"
+        content: "Hi! I'm your Onboarding Agent. I'll help you design a personalized user onboarding experience that drives adoption and engagement.\n\nLet's start with the basics: What product or feature are you onboarding users to?"
       }
     ]);
-    setStrategy(null);
+    setOnboardingPlan(null);
     setConversationComplete(false);
   };
 
   const handleDownload = () => {
-    const strategyText = `
-GTM STRATEGY: ${strategy.productName}
+    const planText = `
+ONBOARDING STRATEGY: ${onboardingPlan.productName}
+
+USER PERSONA
+${onboardingPlan.userPersona}
 
 EXECUTIVE SUMMARY
-${strategy.executiveSummary}
+${onboardingPlan.executiveSummary}
 
-TARGET MARKET
-Primary: ${strategy.targetMarket.primary}
-Secondary: ${strategy.targetMarket.secondary}
-ICP: ${strategy.targetMarket.icp}
+LEARNING OBJECTIVES
+Primary: ${onboardingPlan.learningObjectives.primary}
+Secondary: 
+${onboardingPlan.learningObjectives.secondary.map(obj => `  • ${obj}`).join('\n')}
 
-POSITIONING
-Value Proposition: ${strategy.positioning.valueProposition}
-Differentiation: ${strategy.positioning.differentiation}
-Core Messaging: ${strategy.positioning.messaging}
+ADOPTION BARRIERS & STRATEGIES
+${onboardingPlan.adoptionBarriers.map(b => `
+Barrier: ${b.barrier}
+Strategy: ${b.strategy}
+`).join('\n')}
 
-GO-TO-MARKET MOTION
-Model: ${strategy.goToMarketMotion.model}
-Rationale: ${strategy.goToMarketMotion.rationale}
+ONBOARDING FLOW
+${onboardingPlan.onboardingFlow.map(stage => `
+${stage.stage} (${stage.duration})
+Objectives: ${stage.objectives.join(', ')}
 
-LAUNCH PHASES
-${strategy.launchPhases.map(phase => `
-${phase.phase} (${phase.timeline})
-Objectives:
-${phase.objectives.map(obj => `  • ${obj}`).join('\n')}
 Tactics:
-${phase.tactics.map(tactic => `  • ${tactic}`).join('\n')}
+${stage.tactics.map(t => `  • ${t.tactic}
+    Rationale: ${t.rationale}`).join('\n')}
+
+Success Metrics: ${stage.successMetrics.join(', ')}
 `).join('\n')}
 
-CHANNELS
-${strategy.channels.map(ch => `
-${ch.channel} (${ch.priority})
-${ch.tactics.map(tactic => `  • ${tactic}`).join('\n')}
+CONTENT STRATEGY
+Approach: ${onboardingPlan.contentStrategy.approach}
+
+Formats:
+${onboardingPlan.contentStrategy.formats.map(f => `
+  ${f.format}
+  When: ${f.when}
+  Why: ${f.why}
 `).join('\n')}
 
-METRICS
-North Star Metric: ${strategy.metrics.northStar}
-Leading Indicators: ${strategy.metrics.leading.join(', ')}
-Lagging Indicators: ${strategy.metrics.lagging.join(', ')}
-
-RISKS & MITIGATION
-${strategy.risks.map(r => `
-Risk: ${r.risk}
-Mitigation: ${r.mitigation}
+PERSONALIZATION
+${onboardingPlan.personalization.segments.map(s => `
+${s.segment}:
+${s.adaptations.map(a => `  • ${a}`).join('\n')}
 `).join('\n')}
+
+KEY METRICS
+Engagement: ${onboardingPlan.metrics.engagement.join(', ')}
+Competency: ${onboardingPlan.metrics.competency.join(', ')}
+Retention: ${onboardingPlan.metrics.retention.join(', ')}
+
+TIMELINE
+${onboardingPlan.timeline}
 
 ---
-Generated by GTM Strategy Agent
-Built by Leslie Langan | VP Product Marketing
+Generated by Onboarding Agent
+Built by Leslie Langan
 `;
 
-    const blob = new Blob([strategyText], { type: 'text/plain' });
+    const blob = new Blob([planText], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `GTM-Strategy-${strategy.productName.replace(/\s+/g, '-')}.txt`;
+    a.download = `Onboarding-Strategy-${onboardingPlan.productName.replace(/\s+/g, '-')}.txt`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 p-4">
+return (
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50 p-4">
       {/* Back Button */}
       <button
         onClick={() => navigate('/')}
@@ -228,9 +245,14 @@ Built by Leslie Langan | VP Product Marketing
       <div className="max-w-5xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8 pt-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">GTM Strategy Agent</h1>
-          <p className="text-gray-600">AI-powered go-to-market strategy generation</p>
-          <p className="text-sm text-gray-500 mt-1">Built by Leslie Langan | VP Product Marketing</p>
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-purple-100 rounded-full mb-4">
+            <svg className="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+          </div>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">Onboarding Agent</h1>
+          <p className="text-gray-600">Psychology-informed user onboarding strategy</p>
+          <p className="text-sm text-gray-500 mt-1">Built by Leslie Langan</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -243,7 +265,7 @@ Built by Leslie Langan | VP Product Marketing
                   <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                     <div className={`max-w-[80%] rounded-2xl px-4 py-3 ${
                       msg.role === 'user' 
-                        ? 'bg-indigo-600 text-white' 
+                        ? 'bg-purple-600 text-white' 
                         : 'bg-gray-100 text-gray-900'
                     }`}>
                       <p className="whitespace-pre-wrap">{msg.content}</p>
@@ -253,7 +275,7 @@ Built by Leslie Langan | VP Product Marketing
                 {isLoading && (
                   <div className="flex justify-start">
                     <div className="bg-gray-100 rounded-2xl px-4 py-3">
-                      <Loader2 className="w-5 h-5 animate-spin text-indigo-600" />
+                      <Loader2 className="w-5 h-5 animate-spin text-purple-600" />
                     </div>
                   </div>
                 )}
@@ -269,13 +291,13 @@ Built by Leslie Langan | VP Product Marketing
                       value={input}
                       onChange={(e) => setInput(e.target.value)}
                       placeholder="Type your response..."
-                      className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
                       disabled={isLoading}
                     />
                     <button
                       type="submit"
                       disabled={isLoading || !input.trim()}
-                      className="px-6 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      className="px-6 py-3 bg-purple-600 text-white rounded-xl hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
                       <Send className="w-5 h-5" />
                     </button>
@@ -294,7 +316,7 @@ Built by Leslie Langan | VP Product Marketing
                   </button>
                   <button
                     onClick={handleDownload}
-                    className="flex-1 px-4 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-colors flex items-center justify-center gap-2"
+                    className="flex-1 px-4 py-3 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition-colors flex items-center justify-center gap-2"
                   >
                     <Download className="w-4 h-4" />
                     Download
@@ -304,80 +326,90 @@ Built by Leslie Langan | VP Product Marketing
             </div>
           </div>
 
-          {/* Strategy Display */}
+          {/* Plan Display */}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-2xl shadow-xl p-6" style={{ height: '600px', overflowY: 'auto' }}>
-              {!strategy ? (
+              {!onboardingPlan ? (
                 <div className="h-full flex items-center justify-center text-center px-4">
                   <div>
-                    <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <svg className="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <svg className="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                       </svg>
                     </div>
                     <h3 className="text-lg font-semibold text-gray-900 mb-2">Your Strategy Will Appear Here</h3>
-                    <p className="text-sm text-gray-600">Answer the questions to generate your customized GTM strategy</p>
+                    <p className="text-sm text-gray-600">Answer questions to generate your customized onboarding plan</p>
                   </div>
                 </div>
               ) : (
                 <div className="space-y-6">
                   <div>
-                    <h2 className="text-2xl font-bold text-gray-900 mb-1">{strategy.productName}</h2>
-                    <p className="text-sm text-gray-600">{strategy.executiveSummary}</p>
+                    <h2 className="text-2xl font-bold text-gray-900 mb-1">{onboardingPlan.productName}</h2>
+                    <p className="text-xs text-gray-500 mb-2">{onboardingPlan.userPersona}</p>
+                    <p className="text-sm text-gray-600">{onboardingPlan.executiveSummary}</p>
                   </div>
 
                   <div>
-                    <h3 className="text-sm font-semibold text-indigo-600 uppercase tracking-wide mb-2">Target Market</h3>
-                    <div className="space-y-1 text-sm">
-                      <p><span className="font-medium">Primary:</span> {strategy.targetMarket.primary}</p>
-                      <p><span className="font-medium">ICP:</span> {strategy.targetMarket.icp}</p>
-                    </div>
-                  </div>
-
-                  <div>
-                    <h3 className="text-sm font-semibold text-indigo-600 uppercase tracking-wide mb-2">Positioning</h3>
-                    <div className="space-y-1 text-sm">
-                      <p><span className="font-medium">Value Prop:</span> {strategy.positioning.valueProposition}</p>
-                      <p><span className="font-medium">Differentiation:</span> {strategy.positioning.differentiation}</p>
-                    </div>
-                  </div>
-
-                  <div>
-                    <h3 className="text-sm font-semibold text-indigo-600 uppercase tracking-wide mb-2">GTM Motion</h3>
-                    <p className="text-sm"><span className="font-medium">{strategy.goToMarketMotion.model}</span> - {strategy.goToMarketMotion.rationale}</p>
-                  </div>
-
-                  <div>
-                    <h3 className="text-sm font-semibold text-indigo-600 uppercase tracking-wide mb-2">Launch Phases</h3>
-                    <div className="space-y-3">
-                      {strategy.launchPhases.map((phase, idx) => (
-                        <div key={idx} className="text-sm">
-                          <p className="font-medium">{phase.phase}</p>
-                          <p className="text-xs text-gray-600">{phase.timeline}</p>
-                          <ul className="mt-1 space-y-0.5">
-                            {phase.objectives.slice(0, 2).map((obj, i) => (
-                              <li key={i} className="text-xs text-gray-700">• {obj}</li>
-                            ))}
-                          </ul>
-                        </div>
+                    <h3 className="text-sm font-semibold text-purple-600 uppercase tracking-wide mb-2">Learning Objectives</h3>
+                    <p className="text-sm mb-2"><span className="font-medium">Primary:</span> {onboardingPlan.learningObjectives.primary}</p>
+                    <div className="space-y-1">
+                      {onboardingPlan.learningObjectives.secondary.slice(0, 2).map((obj, idx) => (
+                        <p key={idx} className="text-xs text-gray-700">• {obj}</p>
                       ))}
                     </div>
                   </div>
 
                   <div>
-                    <h3 className="text-sm font-semibold text-indigo-600 uppercase tracking-wide mb-2">Key Metrics</h3>
-                    <p className="text-sm"><span className="font-medium">North Star:</span> {strategy.metrics.northStar}</p>
-                  </div>
-
-                  <div>
-                    <h3 className="text-sm font-semibold text-indigo-600 uppercase tracking-wide mb-2">Top Risks</h3>
+                    <h3 className="text-sm font-semibold text-purple-600 uppercase tracking-wide mb-2">Adoption Barriers</h3>
                     <div className="space-y-2">
-                      {strategy.risks.slice(0, 2).map((risk, idx) => (
+                      {onboardingPlan.adoptionBarriers.slice(0, 2).map((barrier, idx) => (
                         <div key={idx} className="text-sm">
-                          <p className="font-medium text-gray-900">{risk.risk}</p>
-                          <p className="text-xs text-gray-600">{risk.mitigation}</p>
+                          <p className="font-medium text-gray-900">{barrier.barrier}</p>
+                          <p className="text-xs text-gray-600">{barrier.strategy}</p>
                         </div>
                       ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className="text-sm font-semibold text-purple-600 uppercase tracking-wide mb-2">Onboarding Flow</h3>
+                    <div className="space-y-3">
+                      {onboardingPlan.onboardingFlow.slice(0, 2).map((stage, idx) => (
+                        <div key={idx} className="text-sm">
+                          <p className="font-medium">{stage.stage}</p>
+                          <p className="text-xs text-gray-600">{stage.duration}</p>
+                          <div className="mt-1 space-y-1">
+                            {stage.tactics.slice(0, 1).map((tactic, i) => (
+                              <div key={i} className="text-xs">
+                                <p className="text-gray-900">• {tactic.tactic}</p>
+                                <p className="text-gray-500 ml-3">{tactic.rationale}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className="text-sm font-semibold text-purple-600 uppercase tracking-wide mb-2">Content Strategy</h3>
+                    <p className="text-sm mb-2">{onboardingPlan.contentStrategy.approach}</p>
+                    <div className="space-y-2">
+                      {onboardingPlan.contentStrategy.formats.slice(0, 2).map((format, idx) => (
+                        <div key={idx} className="text-xs">
+                          <p className="font-medium text-gray-900">{format.format}</p>
+                          <p className="text-gray-600">{format.why}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className="text-sm font-semibold text-purple-600 uppercase tracking-wide mb-2">Key Metrics</h3>
+                    <div className="space-y-1 text-xs">
+                      <p><span className="font-medium">Engagement:</span> {onboardingPlan.metrics.engagement[0]}</p>
+                      <p><span className="font-medium">Competency:</span> {onboardingPlan.metrics.competency[0]}</p>
+                      <p><span className="font-medium">Retention:</span> {onboardingPlan.metrics.retention[0]}</p>
                     </div>
                   </div>
                 </div>
@@ -388,8 +420,8 @@ Built by Leslie Langan | VP Product Marketing
 
         {/* Footer */}
         <div className="text-center mt-8 text-sm text-gray-600">
-          <p>This agent conducts an intelligent interview and generates customized GTM strategies.</p>
-          <p className="mt-1">Perfect for portfolio demonstrations and practical strategy development.</p>
+          <p>This agent applies learning psychology and behavioral science to create effective onboarding.</p>
+          <p className="mt-1">Based on experience training 2,000+ users on AI fundamentals.</p>
         </div>
       </div>
     </div>

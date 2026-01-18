@@ -2,18 +2,18 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Send, Loader2, Download, RefreshCw, Home as HomeIcon } from 'lucide-react';
 
-export default function GTMAgent() {
+export default function CustomerJourneyAgent() {
   const navigate = useNavigate();
   const [messages, setMessages] = useState([
     {
       role: 'assistant',
-      content: "Hi! I'm your GTM Strategy Agent. I'll help you develop a comprehensive go-to-market strategy tailored to your product.\n\nTo get started, tell me about your product. What does it do, and who is it for?"
+      content: "Hi! I'm your Customer Journey Optimization Agent. I'll help you map and optimize your customer journey to improve conversion, engagement, and retention.\n\nLet's begin: What product or service are we optimizing the customer journey for?"
     }
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [conversationComplete, setConversationComplete] = useState(false);
-  const [strategy, setStrategy] = useState(null);
+  const [journeyMap, setJourneyMap] = useState(null);
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -24,68 +24,84 @@ export default function GTMAgent() {
     scrollToBottom();
   }, [messages]);
 
-  const systemPrompt = `You are an expert GTM Strategy Agent built by Leslie, a VP of Product Marketing with 16+ years of experience in B2B tech, specializing in AI products.
+  const systemPrompt = `You are an expert Customer Journey Optimization Agent built by Leslie, with deep expertise in B2B tech customer lifecycle management and conversion optimization.
 
-Your role is to conduct an intelligent, adaptive interview to gather information about the user's product, then generate a comprehensive go-to-market strategy.
+Your role is to conduct an intelligent interview about the customer, product, and business context, then create a comprehensive customer journey map with optimization recommendations.
 
 INTERVIEW PHASE:
 - Ask 5-7 strategic questions, one at a time
-- Adapt questions based on previous answers (e.g., if B2B, ask about decision-making units; if B2C, ask about acquisition channels)
-- Key areas to cover: product details, target market, competitive landscape, business model, resources/constraints, success metrics
-- Keep questions conversational and insightful
-- After gathering sufficient information, say "I have everything I need to create your GTM strategy. Give me a moment to put this together..." and then respond with ONLY the JSON structure below
+- Adapt based on responses (B2B vs B2C, transactional vs relationship, high-touch vs self-serve)
+- Key areas: customer segments, current journey touchpoints, pain points, conversion goals, competitive context, data/tools available
+- Focus on identifying friction, drop-off points, and optimization opportunities
+- After gathering sufficient information, say "I have everything I need to create your customer journey map. Let me build this..." and then respond with ONLY the JSON structure below
 
-STRATEGY GENERATION PHASE:
-When you have enough information, generate a comprehensive strategy as a JSON object with this EXACT structure (respond with ONLY this JSON, no other text):
+JOURNEY MAP GENERATION:
+When ready, generate a comprehensive map as a JSON object with this EXACT structure (respond with ONLY this JSON, no other text):
 
 {
   "productName": "string",
-  "executiveSummary": "2-3 sentence overview",
-  "targetMarket": {
-    "primary": "description",
-    "secondary": "description",
-    "icp": "ideal customer profile details"
-  },
-  "positioning": {
-    "valueProposition": "clear value prop",
-    "differentiation": "what makes this unique",
-    "messaging": "core message"
-  },
-  "goToMarketMotion": {
-    "model": "PLG/Sales-led/Hybrid/etc",
-    "rationale": "why this model"
-  },
-  "launchPhases": [
+  "customerSegment": "primary customer segment being mapped",
+  "executiveSummary": "2-3 sentence overview of the journey and key opportunities",
+  "journeyStages": [
     {
-      "phase": "Phase 1: Foundation",
-      "timeline": "Months 1-2",
-      "objectives": ["objective 1", "objective 2"],
-      "tactics": ["tactic 1", "tactic 2"]
+      "stage": "Stage name (Awareness, Consideration, Decision, Onboarding, Adoption, Retention, Advocacy)",
+      "customerGoals": ["what customer wants to achieve"],
+      "touchpoints": [
+        {
+          "touchpoint": "specific interaction point",
+          "channel": "channel (web, email, product, sales, etc.)",
+          "purpose": "what this touchpoint accomplishes"
+        }
+      ],
+      "painPoints": [
+        {
+          "pain": "friction or problem customer experiences",
+          "impact": "how this affects conversion/satisfaction"
+        }
+      ],
+      "optimizations": [
+        {
+          "recommendation": "specific optimization",
+          "rationale": "why this will improve the journey",
+          "priority": "High/Medium/Low"
+        }
+      ],
+      "metrics": ["key metrics to track for this stage"]
     }
   ],
-  "channels": [
+  "crossStageOpportunities": [
     {
-      "channel": "channel name",
-      "priority": "Primary/Secondary",
-      "tactics": ["tactic 1", "tactic 2"]
+      "opportunity": "optimization that spans multiple stages",
+      "stages": ["affected stages"],
+      "impact": "expected business impact"
+    }
+  ],
+  "personalization": {
+    "approach": "overall personalization strategy",
+    "segments": [
+      {
+        "segment": "customer type",
+        "adaptations": ["how journey differs for this segment"]
+      }
+    ]
+  },
+  "quickWins": [
+    {
+      "win": "immediate improvement to implement",
+      "effort": "Low/Medium/High",
+      "impact": "expected impact"
     }
   ],
   "metrics": {
-    "northStar": "primary metric",
-    "leading": ["indicator 1", "indicator 2"],
-    "lagging": ["indicator 1", "indicator 2"]
-  },
-  "risks": [
-    {
-      "risk": "risk description",
-      "mitigation": "mitigation strategy"
-    }
-  ]
+    "conversion": ["key conversion metrics"],
+    "engagement": ["engagement indicators"],
+    "retention": ["retention metrics"]
+  }
 }
 
-Be thorough, strategic, and practical. Draw on enterprise SaaS and AI product GTM best practices.`;
+Be strategic, data-informed, and actionable. Focus on measurable improvements to conversion, engagement, and retention.`;
 
-  const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
 
@@ -95,15 +111,13 @@ Be thorough, strategic, and practical. Draw on enterprise SaaS and AI product GT
     setIsLoading(true);
 
     try {
-      const response = await fetch('https://api.anthropic.com/v1/messages', {
+      const response = await fetch('/api/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
-          max_tokens: 4000,
-          system: systemPrompt,
+          systemPrompt: systemPrompt,
           messages: [...messages, userMessage].map(msg => ({
             role: msg.role,
             content: msg.content
@@ -117,12 +131,12 @@ Be thorough, strategic, and practical. Draw on enterprise SaaS and AI product GT
       const jsonMatch = assistantMessage.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         try {
-          const strategyData = JSON.parse(jsonMatch[0]);
-          setStrategy(strategyData);
+          const mapData = JSON.parse(jsonMatch[0]);
+          setJourneyMap(mapData);
           setConversationComplete(true);
           setMessages(prev => [...prev, {
             role: 'assistant',
-            content: "✨ Your GTM strategy is ready! Review it below, and feel free to download it or start a new strategy."
+            content: "✨ Your customer journey map is ready! Review the insights and optimizations below."
           }]);
         } catch (e) {
           setMessages(prev => [...prev, { role: 'assistant', content: assistantMessage }]);
@@ -144,78 +158,30 @@ Be thorough, strategic, and practical. Draw on enterprise SaaS and AI product GT
     setMessages([
       {
         role: 'assistant',
-        content: "Hi! I'm your GTM Strategy Agent. I'll help you develop a comprehensive go-to-market strategy tailored to your product.\n\nTo get started, tell me about your product. What does it do, and who is it for?"
+        content: "Hi! I'm your Customer Journey Optimization Agent. I'll help you map and optimize your customer journey to improve conversion, engagement, and retention.\n\nLet's begin: What product or service are we optimizing the customer journey for?"
       }
     ]);
-    setStrategy(null);
+    setJourneyMap(null);
     setConversationComplete(false);
   };
 
   const handleDownload = () => {
-    const strategyText = `
-GTM STRATEGY: ${strategy.productName}
+    const mapText = `
+CUSTOMER JOURNEY MAP: ${journeyMap.productName}
+
+CUSTOMER SEGMENT
+${journeyMap.customerSegment}
 
 EXECUTIVE SUMMARY
-${strategy.executiveSummary}
+${journeyMap.executiveSummary}
 
-TARGET MARKET
-Primary: ${strategy.targetMarket.primary}
-Secondary: ${strategy.targetMarket.secondary}
-ICP: ${strategy.targetMarket.icp}
-
-POSITIONING
-Value Proposition: ${strategy.positioning.valueProposition}
-Differentiation: ${strategy.positioning.differentiation}
-Core Messaging: ${strategy.positioning.messaging}
-
-GO-TO-MARKET MOTION
-Model: ${strategy.goToMarketMotion.model}
-Rationale: ${strategy.goToMarketMotion.rationale}
-
-LAUNCH PHASES
-${strategy.launchPhases.map(phase => `
-${phase.phase} (${phase.timeline})
-Objectives:
-${phase.objectives.map(obj => `  • ${obj}`).join('\n')}
-Tactics:
-${phase.tactics.map(tactic => `  • ${tactic}`).join('\n')}
-`).join('\n')}
-
-CHANNELS
-${strategy.channels.map(ch => `
-${ch.channel} (${ch.priority})
-${ch.tactics.map(tactic => `  • ${tactic}`).join('\n')}
-`).join('\n')}
-
-METRICS
-North Star Metric: ${strategy.metrics.northStar}
-Leading Indicators: ${strategy.metrics.leading.join(', ')}
-Lagging Indicators: ${strategy.metrics.lagging.join(', ')}
-
-RISKS & MITIGATION
-${strategy.risks.map(r => `
-Risk: ${r.risk}
-Mitigation: ${r.mitigation}
-`).join('\n')}
-
----
-Generated by GTM Strategy Agent
-Built by Leslie Langan | VP Product Marketing
-`;
-
-    const blob = new Blob([strategyText], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `GTM-Strategy-${strategy.productName.replace(/\s+/g, '-')}.txt`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  };
+JOURNEY STAGES
+${journeyMap.journeyStages.map(stage => `
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${stage.stage
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 p-4">
       {/* Back Button */}
       <button
         onClick={() => navigate('/')}
@@ -228,9 +194,14 @@ Built by Leslie Langan | VP Product Marketing
       <div className="max-w-5xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8 pt-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">GTM Strategy Agent</h1>
-          <p className="text-gray-600">AI-powered go-to-market strategy generation</p>
-          <p className="text-sm text-gray-500 mt-1">Built by Leslie Langan | VP Product Marketing</p>
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-emerald-100 rounded-full mb-4">
+            <svg className="w-8 h-8 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+            </svg>
+          </div>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">Customer Journey Agent</h1>
+          <p className="text-gray-600">Map and optimize every stage of the customer experience</p>
+          <p className="text-sm text-gray-500 mt-1">Built by Leslie Langan</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -243,7 +214,7 @@ Built by Leslie Langan | VP Product Marketing
                   <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                     <div className={`max-w-[80%] rounded-2xl px-4 py-3 ${
                       msg.role === 'user' 
-                        ? 'bg-indigo-600 text-white' 
+                        ? 'bg-emerald-600 text-white' 
                         : 'bg-gray-100 text-gray-900'
                     }`}>
                       <p className="whitespace-pre-wrap">{msg.content}</p>
@@ -253,7 +224,7 @@ Built by Leslie Langan | VP Product Marketing
                 {isLoading && (
                   <div className="flex justify-start">
                     <div className="bg-gray-100 rounded-2xl px-4 py-3">
-                      <Loader2 className="w-5 h-5 animate-spin text-indigo-600" />
+                      <Loader2 className="w-5 h-5 animate-spin text-emerald-600" />
                     </div>
                   </div>
                 )}
@@ -269,13 +240,13 @@ Built by Leslie Langan | VP Product Marketing
                       value={input}
                       onChange={(e) => setInput(e.target.value)}
                       placeholder="Type your response..."
-                      className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
                       disabled={isLoading}
                     />
                     <button
                       type="submit"
                       disabled={isLoading || !input.trim()}
-                      className="px-6 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      className="px-6 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
                       <Send className="w-5 h-5" />
                     </button>
@@ -290,11 +261,11 @@ Built by Leslie Langan | VP Product Marketing
                     className="flex-1 px-4 py-3 bg-white border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
                   >
                     <RefreshCw className="w-4 h-4" />
-                    New Strategy
+                    New Journey
                   </button>
                   <button
                     onClick={handleDownload}
-                    className="flex-1 px-4 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-colors flex items-center justify-center gap-2"
+                    className="flex-1 px-4 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-colors flex items-center justify-center gap-2"
                   >
                     <Download className="w-4 h-4" />
                     Download
@@ -304,80 +275,77 @@ Built by Leslie Langan | VP Product Marketing
             </div>
           </div>
 
-          {/* Strategy Display */}
+          {/* Map Display */}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-2xl shadow-xl p-6" style={{ height: '600px', overflowY: 'auto' }}>
-              {!strategy ? (
+              {!journeyMap ? (
                 <div className="h-full flex items-center justify-center text-center px-4">
                   <div>
-                    <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <svg className="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <svg className="w-8 h-8 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                       </svg>
                     </div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">Your Strategy Will Appear Here</h3>
-                    <p className="text-sm text-gray-600">Answer the questions to generate your customized GTM strategy</p>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">Your Journey Map Will Appear Here</h3>
+                    <p className="text-sm text-gray-600">Answer questions to generate your customized journey analysis</p>
                   </div>
                 </div>
               ) : (
                 <div className="space-y-6">
                   <div>
-                    <h2 className="text-2xl font-bold text-gray-900 mb-1">{strategy.productName}</h2>
-                    <p className="text-sm text-gray-600">{strategy.executiveSummary}</p>
+                    <h2 className="text-2xl font-bold text-gray-900 mb-1">{journeyMap.productName}</h2>
+                    <p className="text-xs text-gray-500 mb-2">{journeyMap.customerSegment}</p>
+                    <p className="text-sm text-gray-600">{journeyMap.executiveSummary}</p>
                   </div>
 
                   <div>
-                    <h3 className="text-sm font-semibold text-indigo-600 uppercase tracking-wide mb-2">Target Market</h3>
-                    <div className="space-y-1 text-sm">
-                      <p><span className="font-medium">Primary:</span> {strategy.targetMarket.primary}</p>
-                      <p><span className="font-medium">ICP:</span> {strategy.targetMarket.icp}</p>
-                    </div>
-                  </div>
-
-                  <div>
-                    <h3 className="text-sm font-semibold text-indigo-600 uppercase tracking-wide mb-2">Positioning</h3>
-                    <div className="space-y-1 text-sm">
-                      <p><span className="font-medium">Value Prop:</span> {strategy.positioning.valueProposition}</p>
-                      <p><span className="font-medium">Differentiation:</span> {strategy.positioning.differentiation}</p>
-                    </div>
-                  </div>
-
-                  <div>
-                    <h3 className="text-sm font-semibold text-indigo-600 uppercase tracking-wide mb-2">GTM Motion</h3>
-                    <p className="text-sm"><span className="font-medium">{strategy.goToMarketMotion.model}</span> - {strategy.goToMarketMotion.rationale}</p>
-                  </div>
-
-                  <div>
-                    <h3 className="text-sm font-semibold text-indigo-600 uppercase tracking-wide mb-2">Launch Phases</h3>
-                    <div className="space-y-3">
-                      {strategy.launchPhases.map((phase, idx) => (
-                        <div key={idx} className="text-sm">
-                          <p className="font-medium">{phase.phase}</p>
-                          <p className="text-xs text-gray-600">{phase.timeline}</p>
-                          <ul className="mt-1 space-y-0.5">
-                            {phase.objectives.slice(0, 2).map((obj, i) => (
-                              <li key={i} className="text-xs text-gray-700">• {obj}</li>
-                            ))}
-                          </ul>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <h3 className="text-sm font-semibold text-indigo-600 uppercase tracking-wide mb-2">Key Metrics</h3>
-                    <p className="text-sm"><span className="font-medium">North Star:</span> {strategy.metrics.northStar}</p>
-                  </div>
-
-                  <div>
-                    <h3 className="text-sm font-semibold text-indigo-600 uppercase tracking-wide mb-2">Top Risks</h3>
+                    <h3 className="text-sm font-semibold text-emerald-600 uppercase tracking-wide mb-2">Quick Wins</h3>
                     <div className="space-y-2">
-                      {strategy.risks.slice(0, 2).map((risk, idx) => (
-                        <div key={idx} className="text-sm">
-                          <p className="font-medium text-gray-900">{risk.risk}</p>
-                          <p className="text-xs text-gray-600">{risk.mitigation}</p>
+                      {journeyMap.quickWins.slice(0, 3).map((win, idx) => (
+                        <div key={idx} className="text-sm bg-emerald-50 p-2 rounded-lg">
+                          <p className="font-medium text-gray-900">{win.win}</p>
+                          <p className="text-xs text-gray-600">Effort: {win.effort} • {win.impact}</p>
                         </div>
                       ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className="text-sm font-semibold text-emerald-600 uppercase tracking-wide mb-2">Journey Stages</h3>
+                    <div className="space-y-3">
+                      {journeyMap.journeyStages.slice(0, 3).map((stage, idx) => (
+                        <div key={idx} className="text-sm border-l-2 border-emerald-300 pl-3">
+                          <p className="font-medium text-gray-900">{stage.stage}</p>
+                          <p className="text-xs text-gray-600 mt-1">Goals: {stage.customerGoals[0]}</p>
+                          {stage.painPoints.length > 0 && (
+                            <p className="text-xs text-red-600 mt-1">⚠ {stage.painPoints[0].pain}</p>
+                          )}
+                          {stage.optimizations.length > 0 && (
+                            <p className="text-xs text-emerald-700 mt-1">💡 {stage.optimizations[0].recommendation}</p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className="text-sm font-semibold text-emerald-600 uppercase tracking-wide mb-2">Cross-Stage Opportunities</h3>
+                    <div className="space-y-2">
+                      {journeyMap.crossStageOpportunities.slice(0, 2).map((opp, idx) => (
+                        <div key={idx} className="text-sm">
+                          <p className="font-medium text-gray-900">{opp.opportunity}</p>
+                          <p className="text-xs text-gray-600">{opp.impact}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className="text-sm font-semibold text-emerald-600 uppercase tracking-wide mb-2">Key Metrics</h3>
+                    <div className="space-y-1 text-xs">
+                      <p><span className="font-medium">Conversion:</span> {journeyMap.metrics.conversion[0]}</p>
+                      <p><span className="font-medium">Engagement:</span> {journeyMap.metrics.engagement[0]}</p>
+                      <p><span className="font-medium">Retention:</span> {journeyMap.metrics.retention[0]}</p>
                     </div>
                   </div>
                 </div>
@@ -388,8 +356,8 @@ Built by Leslie Langan | VP Product Marketing
 
         {/* Footer */}
         <div className="text-center mt-8 text-sm text-gray-600">
-          <p>This agent conducts an intelligent interview and generates customized GTM strategies.</p>
-          <p className="mt-1">Perfect for portfolio demonstrations and practical strategy development.</p>
+          <p>This agent maps customer journeys and identifies high-impact optimization opportunities.</p>
+          <p className="mt-1">Perfect for improving conversion, engagement, and retention metrics.</p>
         </div>
       </div>
     </div>

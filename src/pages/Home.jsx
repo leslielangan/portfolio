@@ -97,14 +97,23 @@ export default function Home() {
         <div className="bg-white rounded-2xl shadow-xl p-8 mb-16">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Building AI That People Actually Want to Use</h2>
           <p className="text-gray-600 mb-4">
-            I've spent my career at the intersection of product marketing and user psychology, helping thousands 
-            adopt AI technology by understanding not just what the technology can do, but why people resist it 
-            and how to design experiences that meet them where they are.
+           I love the translation layer of product marketing—figuring out why a product fits, 
+what makes someone care, how to bridge what's possible with what's actually useful. 
+But I'm increasingly focused on AI because I believe we're at a turning point. 
+</p>
+          <p className="text-gray-600 mb-4">
+            AI is 
+going to fundamentally change how humans interact with technology, with each other, 
+and with the world around them. And honestly? There's a real risk of a dystopian turn 
+here. I want to be one of the people making sure that as this technology advances, it 
+does so in a way that has a positive impact—on the people using it and on society as 
+a whole. 
           </p>
+
           <p className="text-gray-600">
-            These agents demonstrate my approach: combining strategic frameworks with behavioral insights to create 
-            AI experiences that are both powerful and human-centered. Each one represents a different aspect of the 
-            product lifecycle I've optimized throughout my career.
+            These agents are part of that work: learning, tinkering, testing what it looks 
+like to build AI that serves people well. I'm figuring this out as I go, but I think 
+that's the point.
           </p>
         </div>
 
