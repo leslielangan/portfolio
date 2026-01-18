@@ -260,21 +260,78 @@ INTERNAL examples:
 
 Don't just list formats - give REAL content ideas with REAL specifications, timelines, and distribution plans.`;
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!input.trim() || isLoading) return;
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  if (!input.trim() || isLoading) return;
 
-    const userMessage = { role: 'user', content: input };
-    setMessages(prev => [...prev, userMessage]);
-    setInput('');
-    setIsLoading(true);
+  const userMessage = { role: 'user', content: input };
+  setMessages(prev => [...prev, userMessage]);
+  setInput('');
+  setIsLoading(true);
 
-    try {
-      const response = await fetch('/api/chat', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-  },
+  try {
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        systemPrompt: systemPrompt,
+        messages: [...messages, userMessage].map(msg => ({
+          role: msg.role,
+          content: msg.content
+        }))
+      })
+    });
+
+    const data = await response.json();
+    const assistantMessage = data.content[0].text;
+
+    // Try to extract JSON from the response
+    let strategyData = null;
+
+    // First, try to find JSON in code blocks
+    const codeBlockMatch = assistantMessage.match(/```(?:json)?\s*(\{[\s\S]*?\})\s*```/);
+    if (codeBlockMatch) {
+      try {
+        strategyData = JSON.parse(codeBlockMatch[1]);
+      } catch (e) {
+        console.log('Failed to parse from code block');
+      }
+    }
+
+    // If that didn't work, try to find raw JSON
+    if (!strategyData) {
+      const jsonMatch = assistantMessage.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        try {
+          strategyData = JSON.parse(jsonMatch[0]);
+        } catch (e) {
+          console.log('Failed to parse raw JSON');
+        }
+      }
+    }
+
+    // If we successfully parsed the strategy
+    if (strategyData && strategyData.productName) {
+      setStrategy(strategyData);
+      setConversationComplete(true);
+      setMessages(prev => [...prev, {
+        role: 'assistant',
+        content: "✨ Your GTM strategy is ready! Review it in the panel on the right, download it, or start a new strategy."
+      }]);
+    } else {
+      setMessages(prev => [...prev, { role: 'assistant', content: assistantMessage }]);
+    }
+  } catch (error) {
+    setMessages(prev => [...prev, {
+      role: 'assistant',
+      content: 'I apologize, but I encountered an error. Please try again.'
+    }]);
+  } finally {
+    setIsLoading(false);
+  }
+};
   body: JSON.stringify({
     systemPrompt: systemPrompt,
     messages: [...messages, userMessage].map(msg => ({
@@ -563,7 +620,6 @@ Built by Leslie Langan | VP Product Marketing
         {/* Footer */}
         <div className="text-center mt-8 text-sm text-gray-600">
           <p>This agent conducts an intelligent interview and generates customized GTM strategies.</p>
-          <p className="mt-1">Perfect for portfolio demonstrations and practical strategy development.</p>
         </div>
       </div>
     </div>
