@@ -83,13 +83,6 @@ export default function Home() {
               <Linkedin className="w-4 h-4" />
               LinkedIn
             </a>
-            <a 
-              href="mailto:leslie@leslielangan.com"
-              className="flex items-center gap-2 px-4 py-2 bg-white rounded-lg shadow hover:shadow-md transition-shadow text-gray-700"
-            >
-              <Mail className="w-4 h-4" />
-              Contact
-            </a>
           </div>
         </div>
 
@@ -161,48 +154,15 @@ that's the point.
           </div>
         </div>
 
-        {/* Background Section */}
-        <div className="bg-white rounded-2xl shadow-xl p-8 mb-16">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Background & Expertise</h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">Professional Experience</h3>
-              <ul className="space-y-2 text-gray-600">
-                <li>• VP Product Marketing at Horizon Media</li>
-                <li>• 16+ years in B2B tech product marketing</li>
-                <li>• Led GTM strategy for AI-native Blu Platform</li>
-                <li>• Trained 2,000+ users on AI fundamentals</li>
-                <li>• Expert in AI adoption psychology & change management</li>
-              </ul>
-            </div>
-            
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">Current Focus</h3>
-              <ul className="space-y-2 text-gray-600">
-                <li>• Pursuing graduate studies in Human-Computer Interaction</li>
-                <li>• Exploring international opportunities (Barcelona, London)</li>
-                <li>• Building AI agents that bridge strategic frameworks with user psychology</li>
-                <li>• Passionate about animal welfare AI applications</li>
-              </ul>
-            </div>
-          </div>
-        </div>
+
 
         {/* CTA Section */}
         <div className="bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl shadow-xl p-8 text-center text-white">
           <h2 className="text-3xl font-bold mb-4">Let's Build Something Together</h2>
           <p className="text-indigo-100 mb-6 max-w-2xl mx-auto">
-            Whether you're looking for strategic product marketing expertise, AI adoption consulting, 
-            or collaboration on HCI research, I'd love to connect.
+            Whether you're looking for strategic product marketing expertise or AI adoption consulting, I'd love to connect.
           </p>
           <div className="flex items-center justify-center gap-4">
-            <a 
-              href="mailto:leslie@leslielangan.com"
-              className="px-6 py-3 bg-white text-indigo-600 rounded-lg font-semibold hover:bg-indigo-50 transition-colors"
-            >
-              Get in Touch
-            </a>
             <a 
               href="https://www.linkedin.com/in/leslielangan"
               target="_blank"
