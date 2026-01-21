@@ -15,7 +15,7 @@ export default function Home() {
       />
 
       {/* Navigation */}
-      <nav className="sticky top-0 bg-white/98 border-b border-[#DBE6E5] z-[100] py-7">
+      <nav className="sticky top-0 bg-white border-b border-[#DBE6E5] z-[100] py-7">
         <div className="max-w-[1200px] mx-auto px-20 flex justify-between items-center">
           <div className="text-base font-bold text-[#03110E] uppercase tracking-[2px]">
             Leslie Langan
@@ -33,7 +33,7 @@ export default function Home() {
       <div className="max-w-[1200px] mx-auto px-20">
         {/* Hero Section */}
         <section className="py-[120px] pb-20 text-center" id="home">
-          <h1 className="text-[84px] font-bold text-[#536B79] leading-tight mb-5" style={{ fontFamily: "'Dancing Script', cursive" }}>
+          <h1 className="text-[84px] font-bold text-[#536B79] leading-tight mb-5" style={{ fontFamily: "'Pacifico', cursive" }}>
             Leslie Langan
           </h1>
           <h2 className="text-[120px] font-black text-[#26413C] leading-none mb-12" style={{ letterSpacing: '-4px' }}>
@@ -68,7 +68,7 @@ export default function Home() {
         <section className="py-[140px]" id="agents">
           <div className="mb-20">
             <h2 className="text-[88px] font-black text-[#03110E] leading-[0.95] pb-6 border-b-[6px] border-[#26413C] inline-block" style={{ letterSpacing: '-3px' }}>
-              AI-Powered <span className="text-[#536B79]" style={{ fontFamily: "'Dancing Script', cursive", fontWeight: 700 }}>Agents</span>
+              AI-Powered <span className="text-[#536B79]" style={{ fontFamily: "'Pacifico', cursive", fontWeight: 700 }}>Agents</span>
             </h2>
           </div>
 
@@ -78,7 +78,7 @@ export default function Home() {
               className="bg-white p-12 px-10 border-2 border-[#DBE6E5] rounded-sm relative cursor-pointer transition-all duration-300 shadow-[0_1px_3px_rgba(0,0,0,0.03),0_4px_8px_rgba(0,0,0,0.04)] hover:translate-y-[-6px] hover:shadow-[0_4px_8px_rgba(0,0,0,0.06),0_16px_32px_rgba(0,0,0,0.08)] after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[6px] after:bg-[#26413C] after:transition-all"
               onClick={() => navigate('/gtm-agent')}
             >
-              <div className="text-[96px] font-bold text-[#DBE6E5] leading-none mb-4" style={{ fontFamily: "'Dancing Script', cursive" }}>01</div>
+              <div className="text-[96px] font-bold text-[#DBE6E5] leading-none mb-4" style={{ fontFamily: "'Pacifico', cursive" }}>01</div>
               <h3 className="text-[26px] font-extrabold text-[#03110E] mb-7 leading-tight">GTM Strategy Agent</h3>
               <button className="inline-block text-[#26413C] font-bold text-sm uppercase tracking-[1px] transition-all hover:tracking-[2px]">
                 Try It →
@@ -90,7 +90,7 @@ export default function Home() {
               className="bg-white p-12 px-10 border-2 border-[#DBE6E5] rounded-sm relative cursor-pointer transition-all duration-300 shadow-[0_1px_3px_rgba(0,0,0,0.03),0_4px_8px_rgba(0,0,0,0.04)] hover:translate-y-[-6px] hover:shadow-[0_4px_8px_rgba(0,0,0,0.06),0_16px_32px_rgba(0,0,0,0.08)] after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[6px] after:bg-[#536B79] after:transition-all"
               onClick={() => navigate('/onboarding-agent')}
             >
-              <div className="text-[96px] font-bold text-[#DBE6E5] leading-none mb-4" style={{ fontFamily: "'Dancing Script', cursive" }}>02</div>
+              <div className="text-[96px] font-bold text-[#DBE6E5] leading-none mb-4" style={{ fontFamily: "'Pacifico', cursive" }}>02</div>
               <h3 className="text-[26px] font-extrabold text-[#03110E] mb-7 leading-tight">Onboarding Agent</h3>
               <button className="inline-block text-[#26413C] font-bold text-sm uppercase tracking-[1px] transition-all hover:tracking-[2px]">
                 Try It →
@@ -102,7 +102,7 @@ export default function Home() {
               className="bg-white p-12 px-10 border-2 border-[#DBE6E5] rounded-sm relative cursor-pointer transition-all duration-300 shadow-[0_1px_3px_rgba(0,0,0,0.03),0_4px_8px_rgba(0,0,0,0.04)] hover:translate-y-[-6px] hover:shadow-[0_4px_8px_rgba(0,0,0,0.06),0_16px_32px_rgba(0,0,0,0.08)] after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[6px] after:bg-[#616B61] after:transition-all"
               onClick={() => navigate('/customer-journey-agent')}
             >
-              <div className="text-[96px] font-bold text-[#DBE6E5] leading-none mb-4" style={{ fontFamily: "'Dancing Script', cursive" }}>03</div>
+              <div className="text-[96px] font-bold text-[#DBE6E5] leading-none mb-4" style={{ fontFamily: "'Pacifico', cursive" }}>03</div>
               <h3 className="text-[26px] font-extrabold text-[#03110E] mb-7 leading-tight">Customer Journey Agent</h3>
               <button className="inline-block text-[#26413C] font-bold text-sm uppercase tracking-[1px] transition-all hover:tracking-[2px]">
                 Try It →
@@ -115,7 +115,7 @@ export default function Home() {
         <section className="py-[140px]" id="work">
           <div className="mb-20">
             <h2 className="text-[88px] font-black text-[#03110E] leading-[0.95] pb-6 border-b-[6px] border-[#26413C] inline-block" style={{ letterSpacing: '-3px' }}>
-              Case Studies & <span className="text-[#536B79]" style={{ fontFamily: "'Dancing Script', cursive", fontWeight: 700 }}>Work</span>
+              Case Studies & <span className="text-[#536B79]" style={{ fontFamily: "'Pacifico', cursive", fontWeight: 700 }}>Work</span>
             </h2>
           </div>
 
@@ -303,7 +303,7 @@ export default function Home() {
       <section className="bg-[#DBE6E5] -mx-20 py-[140px]" id="about">
         <div className="grid grid-cols-2 gap-20 max-w-[1100px] mx-auto px-20">
           <div>
-            <div className="text-[48px] font-bold text-[#536B79] mb-6 leading-tight" style={{ fontFamily: "'Dancing Script', cursive" }}>
+            <div className="text-[48px] font-bold text-[#536B79] mb-6 leading-tight" style={{ fontFamily: "'Pacifico', cursive" }}>
               Background
             </div>
             <h3 className="text-[52px] font-black text-[#03110E] mb-8 leading-[1.1]">
@@ -315,7 +315,7 @@ export default function Home() {
           </div>
 
           <div>
-            <div className="text-[48px] font-bold text-[#536B79] mb-6 leading-tight" style={{ fontFamily: "'Dancing Script', cursive" }}>
+            <div className="text-[48px] font-bold text-[#536B79] mb-6 leading-tight" style={{ fontFamily: "'Pacifico', cursive" }}>
               Focus
             </div>
             <h3 className="text-[52px] font-black text-[#03110E] mb-8 leading-[1.1]">
