@@ -7,13 +7,13 @@ export default function CustomerJourneyAgent() {
   const [messages, setMessages] = useState([
     {
       role: 'assistant',
-      content: "Hi! I'm your Customer Journey Optimization Agent. I'll help you map and optimize your customer journey to improve conversion, engagement, and retention.\n\nLet's begin: What product or service are we optimizing the customer journey for?"
+      content: "Hi! I'm your Customer Journey Agent. I'll help you map and optimize every touchpoint of your customer experience.\n\nTo get started, tell me about your product and customers. Who are they and what journey are they on?"
     }
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [conversationComplete, setConversationComplete] = useState(false);
-  const [journeyMap, setJourneyMap] = useState(null);
+  const [strategy, setStrategy] = useState(null);
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -24,85 +24,52 @@ export default function CustomerJourneyAgent() {
     scrollToBottom();
   }, [messages]);
 
-  const systemPrompt = `You are an expert Customer Journey Optimization Agent built by Leslie, with deep expertise in B2B tech customer lifecycle management and conversion optimization.
+  const systemPrompt = `You are an expert Customer Journey Agent built by Leslie, a VP of Product Marketing with 16+ years of experience in B2B tech.
 
-Your role is to conduct an intelligent interview about the customer, product, and business context, then create a comprehensive customer journey map with optimization recommendations.
+Your role is to conduct an intelligent interview about the user's customers and their journey, then generate a comprehensive customer journey map with optimization opportunities.
 
 INTERVIEW PHASE:
-- Ask 5-7 strategic questions, one at a time
-- Adapt based on responses (B2B vs B2C, transactional vs relationship, high-touch vs self-serve)
-- Key areas: customer segments, current journey touchpoints, pain points, conversion goals, competitive context, data/tools available
-- Focus on identifying friction, drop-off points, and optimization opportunities
-- After gathering sufficient information, say "I have everything I need to create your customer journey map. Let me build this..." and then respond with ONLY the JSON structure below
+- Ask 5-7 strategic questions about customers, their goals, current journey, pain points, and success moments
+- Adapt questions based on previous answers
+- Key areas: customer segments, journey stages, touchpoints, pain points, moments of delight, conversion goals
+- After gathering sufficient information, say "I have everything I need. Let me map out your customer journey..." and respond with ONLY the JSON structure
 
-JOURNEY MAP GENERATION:
-When ready, generate a comprehensive map as a JSON object with this EXACT structure (respond with ONLY this JSON, no other text):
+STRATEGY GENERATION PHASE:
+Generate a comprehensive customer journey map as JSON with this structure (respond with ONLY this JSON):
 
 {
   "productName": "string",
-  "customerSegment": "primary customer segment being mapped",
-  "executiveSummary": "2-3 sentence overview of the journey and key opportunities",
+  "customerSegment": "primary segment being analyzed",
   "journeyStages": [
     {
-      "stage": "Stage name (Awareness, Consideration, Decision, Onboarding, Adoption, Retention, Advocacy)",
-      "customerGoals": ["what customer wants to achieve"],
-      "touchpoints": [
-        {
-          "touchpoint": "specific interaction point",
-          "channel": "channel (web, email, product, sales, etc.)",
-          "purpose": "what this touchpoint accomplishes"
-        }
-      ],
-      "painPoints": [
-        {
-          "pain": "friction or problem customer experiences",
-          "impact": "how this affects conversion/satisfaction"
-        }
-      ],
-      "optimizations": [
-        {
-          "recommendation": "specific optimization",
-          "rationale": "why this will improve the journey",
-          "priority": "High/Medium/Low"
-        }
-      ],
-      "metrics": ["key metrics to track for this stage"]
+      "stage": "stage name (e.g., Awareness, Consideration, Decision, Onboarding, Adoption, Retention, Advocacy)",
+      "customerGoals": ["goal 1", "goal 2"],
+      "touchpoints": ["touchpoint 1", "touchpoint 2"],
+      "painPoints": ["pain point 1", "pain point 2"],
+      "opportunities": ["optimization 1", "optimization 2"],
+      "metrics": ["metric to track 1", "metric to track 2"]
     }
   ],
   "crossStageOpportunities": [
     {
-      "opportunity": "optimization that spans multiple stages",
-      "stages": ["affected stages"],
-      "impact": "expected business impact"
+      "opportunity": "opportunity description",
+      "impact": "expected impact",
+      "effort": "low/medium/high"
     }
   ],
   "personalization": {
-    "approach": "overall personalization strategy",
-    "segments": [
-      {
-        "segment": "customer type",
-        "adaptations": ["how journey differs for this segment"]
-      }
-    ]
+    "approach": "how to personalize the journey",
+    "segments": ["segment-specific approach 1", "segment-specific approach 2"]
   },
-  "quickWins": [
-    {
-      "win": "immediate improvement to implement",
-      "effort": "Low/Medium/High",
-      "impact": "expected impact"
-    }
-  ],
+  "quickWins": ["quick win 1", "quick win 2", "quick win 3"],
   "metrics": {
-    "conversion": ["key conversion metrics"],
-    "engagement": ["engagement indicators"],
-    "retention": ["retention metrics"]
+    "conversion": ["metric 1", "metric 2"],
+    "engagement": ["metric 1", "metric 2"],
+    "retention": ["metric 1", "metric 2"]
   }
-}
+}`;
 
-Be strategic, data-informed, and actionable. Focus on measurable improvements to conversion, engagement, and retention.`;
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSend = async () => {
     if (!input.trim() || isLoading) return;
 
     const userMessage = { role: 'user', content: input };
@@ -113,30 +80,27 @@ Be strategic, data-informed, and actionable. Focus on measurable improvements to
     try {
       const response = await fetch('/api/chat', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          systemPrompt: systemPrompt,
-          messages: [...messages, userMessage].map(msg => ({
-            role: msg.role,
-            content: msg.content
-          }))
+          systemPrompt,
+          messages: [...messages, userMessage]
         })
       });
 
       const data = await response.json();
       const assistantMessage = data.content[0].text;
 
-      const jsonMatch = assistantMessage.match(/\{[\s\S]*\}/);
+      const jsonMatch = assistantMessage.match(/```(?:json)?\s*(\{[\s\S]*?\})\s*```/) || 
+                       assistantMessage.match(/(\{[\s\S]*\})/);
+      
       if (jsonMatch) {
         try {
-          const mapData = JSON.parse(jsonMatch[0]);
-          setJourneyMap(mapData);
+          const strategyData = JSON.parse(jsonMatch[1]);
+          setStrategy(strategyData);
           setConversationComplete(true);
           setMessages(prev => [...prev, {
             role: 'assistant',
-            content: "✨ Your customer journey map is ready! Review the insights and optimizations below."
+            content: "Perfect! I've mapped your customer journey. You can view it in the panel and download it."
           }]);
         } catch (e) {
           setMessages(prev => [...prev, { role: 'assistant', content: assistantMessage }]);
@@ -147,7 +111,7 @@ Be strategic, data-informed, and actionable. Focus on measurable improvements to
     } catch (error) {
       setMessages(prev => [...prev, {
         role: 'assistant',
-        content: 'I apologize, but I encountered an error. Please try again.'
+        content: "I encountered an error. Please try again."
       }]);
     } finally {
       setIsLoading(false);
@@ -155,87 +119,69 @@ Be strategic, data-informed, and actionable. Focus on measurable improvements to
   };
 
   const handleReset = () => {
-    setMessages([
-      {
-        role: 'assistant',
-        content: "Hi! I'm your Customer Journey Optimization Agent. I'll help you map and optimize your customer journey to improve conversion, engagement, and retention.\n\nLet's begin: What product or service are we optimizing the customer journey for?"
-      }
-    ]);
-    setJourneyMap(null);
+    setMessages([{
+      role: 'assistant',
+      content: "Hi! I'm your Customer Journey Agent. I'll help you map and optimize every touchpoint of your customer experience.\n\nTo get started, tell me about your product and customers. Who are they and what journey are they on?"
+    }]);
+    setStrategy(null);
     setConversationComplete(false);
   };
 
-  const handleDownload = () => {
-    const mapText = `
-CUSTOMER JOURNEY MAP: ${journeyMap.productName}
+  const downloadStrategy = () => {
+    const strategyText = `CUSTOMER JOURNEY MAP: ${strategy.productName}
 
 CUSTOMER SEGMENT
-${journeyMap.customerSegment}
-
-EXECUTIVE SUMMARY
-${journeyMap.executiveSummary}
+${strategy.customerSegment}
 
 JOURNEY STAGES
-${journeyMap.journeyStages.map(stage => `
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-${stage.stage.toUpperCase()}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${strategy.journeyStages.map((stage, i) => `
+Stage ${i + 1}: ${stage.stage}
 
 Customer Goals:
-${stage.customerGoals.map(g => `  • ${g}`).join('\n')}
+${stage.customerGoals.map(g => `  - ${g}`).join('\n')}
 
-Key Touchpoints:
-${stage.touchpoints.map(t => `  • ${t.touchpoint} (${t.channel})
-    Purpose: ${t.purpose}`).join('\n')}
+Touchpoints:
+${stage.touchpoints.map(t => `  - ${t}`).join('\n')}
 
 Pain Points:
-${stage.painPoints.map(p => `  • ${p.pain}
-    Impact: ${p.impact}`).join('\n')}
+${stage.painPoints.map(p => `  - ${p}`).join('\n')}
 
-Optimization Recommendations:
-${stage.optimizations.map(o => `  ${o.priority} PRIORITY: ${o.recommendation}
-    Rationale: ${o.rationale}`).join('\n')}
+Opportunities:
+${stage.opportunities.map(o => `  - ${o}`).join('\n')}
 
-Key Metrics: ${stage.metrics.join(', ')}
+Metrics:
+${stage.metrics.map(m => `  - ${m}`).join('\n')}
 `).join('\n')}
 
 CROSS-STAGE OPPORTUNITIES
-${journeyMap.crossStageOpportunities.map(opp => `
-- ${opp.opportunity}
-  Affects: ${opp.stages.join(', ')}
-  Impact: ${opp.impact}
+${strategy.crossStageOpportunities.map((opp, i) => `
+${i + 1}. ${opp.opportunity}
+   Impact: ${opp.impact}
+   Effort: ${opp.effort}
 `).join('\n')}
 
-PERSONALIZATION STRATEGY
-${journeyMap.personalization.approach}
-
-Segment Adaptations:
-${journeyMap.personalization.segments.map(s => `
-${s.segment}:
-${s.adaptations.map(a => `  • ${a}`).join('\n')}
-`).join('\n')}
+PERSONALIZATION
+Approach: ${strategy.personalization.approach}
+Segments: ${strategy.personalization.segments.join(', ')}
 
 QUICK WINS
-${journeyMap.quickWins.map(w => `
-- ${w.win}
-  Effort: ${w.effort} | Impact: ${w.impact}
-`).join('\n')}
+${strategy.quickWins.map((w, i) => `${i + 1}. ${w}`).join('\n')}
 
-KEY METRICS TO TRACK
-Conversion: ${journeyMap.metrics.conversion.join(', ')}
-Engagement: ${journeyMap.metrics.engagement.join(', ')}
-Retention: ${journeyMap.metrics.retention.join(', ')}
+KEY METRICS
+Conversion: ${strategy.metrics.conversion.join(', ')}
+Engagement: ${strategy.metrics.engagement.join(', ')}
+Retention: ${strategy.metrics.retention.join(', ')}
 
 ---
 Generated by Customer Journey Agent
-Built by Leslie Langan
+Built by Leslie Langan | Product Marketing Expert
 `;
 
-    const blob = new Blob([mapText], { type: 'text/plain' });
+    const blob = new Blob([strategyText], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `Customer-Journey-${journeyMap.productName.replace(/\s+/g, '-')}.txt`;
+    a.download = `Customer-Journey-${strategy.productName.replace(/\s+/g, '-')}.txt`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -243,178 +189,176 @@ Built by Leslie Langan
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 p-4">
-      <button
-        onClick={() => navigate('/')}
-        className="fixed top-4 left-4 z-50 flex items-center gap-2 px-4 py-2 bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow text-gray-700 font-medium"
-      >
-        <HomeIcon className="w-4 h-4" />
-        Back to Portfolio
-      </button>
+    <>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap');
+        
+        body::after {
+          content: '';
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300"><filter id="n"><feTurbulence baseFrequency="0.9" numOctaves="3"/></filter><rect width="300" height="300" filter="url(%23n)" opacity="0.015"/></svg>');
+          pointer-events: none;
+          z-index: 9999;
+        }
+      `}</style>
 
-      <div className="max-w-5xl mx-auto">
-        <div className="text-center mb-8 pt-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-emerald-100 rounded-full mb-4">
-            <svg className="w-8 h-8 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-            </svg>
+      <div className="min-h-screen bg-white p-4 md:p-8">
+        {/* Back Button */}
+        <button
+          onClick={() => navigate('/')}
+          className="fixed top-6 left-6 z-50 flex items-center gap-2 px-6 py-3 bg-white rounded border-2 border-[#DBE6E5] hover:border-[#616B61] transition-all text-[#616B61] hover:text-[#03110E] font-medium shadow-sm"
+        >
+          <HomeIcon className="w-4 h-4" />
+          <span className="hidden sm:inline">Back to Portfolio</span>
+          <span className="sm:hidden">Back</span>
+        </button>
+
+        <div className="max-w-7xl mx-auto pt-20 md:pt-16">
+          {/* Header */}
+          <div className="text-center mb-12">
+            <h1 className="text-5xl md:text-7xl font-black text-[#03110E] mb-4" style={{ letterSpacing: '-2px' }}>
+              Customer <span className="text-[#616B61]" style={{ fontFamily: "'Dancing Script', cursive", fontWeight: 700 }}>Journey</span> Agent
+            </h1>
           </div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Customer Journey Agent</h1>
-          <p className="text-gray-600">Map and optimize every stage of the customer experience</p>
-          <p className="text-sm text-gray-500 mt-1">Built by Leslie Langan</p>
-        </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2">
-            <div className="bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col" style={{ height: '600px' }}>
-              <div className="flex-1 overflow-y-auto p-6 space-y-4">
-                {messages.map((msg, idx) => (
-                  <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                    <div className={`max-w-[80%] rounded-2xl px-4 py-3 ${
-                      msg.role === 'user' 
-                        ? 'bg-emerald-600 text-white' 
-                        : 'bg-gray-100 text-gray-900'
-                    }`}>
-                      <p className="whitespace-pre-wrap">{msg.content}</p>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Chat Interface */}
+            <div className="lg:col-span-2">
+              <div className="bg-white border-2 border-[#DBE6E5] rounded-lg shadow-sm overflow-hidden flex flex-col" style={{ height: '600px' }}>
+                {/* Messages */}
+                <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                  {messages.map((msg, idx) => (
+                    <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                      <div className={`max-w-[80%] rounded-lg px-4 py-3 ${
+                        msg.role === 'user' 
+                          ? 'bg-[#616B61] text-white' 
+                          : 'bg-[#F8FAFA] text-[#03110E] border border-[#DBE6E5]'
+                      }`}>
+                        <p className="whitespace-pre-wrap text-sm leading-relaxed">{msg.content}</p>
+                      </div>
                     </div>
-                  </div>
-                ))}
-                {isLoading && (
-                  <div className="flex justify-start">
-                    <div className="bg-gray-100 rounded-2xl px-4 py-3">
-                      <Loader2 className="w-5 h-5 animate-spin text-emerald-600" />
+                  ))}
+                  {isLoading && (
+                    <div className="flex justify-start">
+                      <div className="bg-[#F8FAFA] border border-[#DBE6E5] rounded-lg px-4 py-3">
+                        <Loader2 className="w-5 h-5 animate-spin text-[#616B61]" />
+                      </div>
                     </div>
-                  </div>
-                )}
-                <div ref={messagesEndRef} />
-              </div>
+                  )}
+                  <div ref={messagesEndRef} />
+                </div>
 
-              {!conversationComplete && (
-                <form onSubmit={handleSubmit} className="border-t border-gray-200 p-4">
+                {/* Input */}
+                <div className="border-t-2 border-[#DBE6E5] p-4 bg-[#FAFBFB]">
                   <div className="flex gap-2">
                     <input
                       type="text"
                       value={input}
                       onChange={(e) => setInput(e.target.value)}
-                      placeholder="Type your response..."
-                      className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                      disabled={isLoading}
+                      onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+                      placeholder={conversationComplete ? "Journey complete!" : "Type your response..."}
+                      disabled={conversationComplete || isLoading}
+                      className="flex-1 px-4 py-3 border-2 border-[#DBE6E5] rounded-lg focus:outline-none focus:border-[#616B61] disabled:opacity-50 disabled:cursor-not-allowed text-[#03110E] placeholder-[#616B61]"
                     />
                     <button
-                      type="submit"
-                      disabled={isLoading || !input.trim()}
-                      className="px-6 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      onClick={handleSend}
+                      disabled={conversationComplete || isLoading || !input.trim()}
+                      className="px-6 py-3 bg-[#616B61] text-white rounded-lg hover:bg-[#03110E] disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
                     >
                       <Send className="w-5 h-5" />
                     </button>
                   </div>
-                </form>
-              )}
-
-              {conversationComplete && (
-                <div className="border-t border-gray-200 p-4 bg-gray-50 flex gap-3">
-                  <button
-                    onClick={handleReset}
-                    className="flex-1 px-4 py-3 bg-white border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
-                  >
-                    <RefreshCw className="w-4 h-4" />
-                    New Journey
-                  </button>
-                  <button
-                    onClick={handleDownload}
-                    className="flex-1 px-4 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-colors flex items-center justify-center gap-2"
-                  >
-                    <Download className="w-4 h-4" />
-                    Download
-                  </button>
                 </div>
+              </div>
+
+              {/* Reset Button */}
+              {conversationComplete && (
+                <button
+                  onClick={handleReset}
+                  className="mt-4 w-full px-6 py-3 bg-white border-2 border-[#DBE6E5] text-[#616B61] rounded-lg hover:border-[#616B61] hover:text-[#03110E] transition-all font-medium flex items-center justify-center gap-2"
+                >
+                  <RefreshCw className="w-4 h-4" />
+                  Start New Journey Map
+                </button>
               )}
             </div>
-          </div>
 
-          <div className="lg:col-span-1">
-            <div className="bg-white rounded-2xl shadow-xl p-6" style={{ height: '600px', overflowY: 'auto' }}>
-              {!journeyMap ? (
-                <div className="h-full flex items-center justify-center text-center px-4">
-                  <div>
-                    <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <svg className="w-8 h-8 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                      </svg>
-                    </div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">Your Journey Map Will Appear Here</h3>
-                    <p className="text-sm text-gray-600">Answer questions to generate your customized journey analysis</p>
+            {/* Strategy Display */}
+            <div className="lg:col-span-1">
+              {strategy ? (
+                <div className="bg-white border-2 border-[#DBE6E5] rounded-lg shadow-sm p-6 sticky top-24">
+                  <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-2xl font-bold text-[#03110E]">Your Journey</h2>
+                    <button
+                      onClick={downloadStrategy}
+                      className="p-2 text-[#616B61] hover:bg-[#F8FAFA] rounded-lg transition-colors"
+                      title="Download Journey Map"
+                    >
+                      <Download className="w-5 h-5" />
+                    </button>
                   </div>
+
+                  <div className="space-y-6 max-h-[500px] overflow-y-auto pr-2">
+                    <div>
+                      <h3 className="font-bold text-[#616B61] mb-2 text-sm uppercase tracking-wider">Product</h3>
+                      <p className="text-[#03110E] text-sm">{strategy.productName}</p>
+                    </div>
+
+                    <div>
+                      <h3 className="font-bold text-[#616B61] mb-2 text-sm uppercase tracking-wider">Customer Segment</h3>
+                      <p className="text-[#03110E] text-sm">{strategy.customerSegment}</p>
+                    </div>
+
+                    <div>
+                      <h3 className="font-bold text-[#616B61] mb-2 text-sm uppercase tracking-wider">Journey Stages</h3>
+                      <div className="space-y-3">
+                        {strategy.journeyStages.map((stage, i) => (
+                          <div key={i} className="text-sm">
+                            <p className="font-semibold text-[#03110E]">{stage.stage}</p>
+                            <p className="text-[#616B61] text-xs mt-1">
+                              {stage.touchpoints.length} touchpoints
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <h3 className="font-bold text-[#616B61] mb-2 text-sm uppercase tracking-wider">Quick Wins</h3>
+                      <ul className="space-y-1 text-sm">
+                        {strategy.quickWins.map((win, i) => (
+                          <li key={i} className="flex gap-2 text-[#03110E]">
+                            <span className="text-[#616B61]">•</span>
+                            <span>{win}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={downloadStrategy}
+                    className="mt-6 w-full px-4 py-3 bg-[#616B61] text-white rounded-lg hover:bg-[#03110E] transition-colors font-medium text-sm uppercase tracking-wider"
+                  >
+                    Download Full Journey
+                  </button>
                 </div>
               ) : (
-                <div className="space-y-6">
-                  <div>
-                    <h2 className="text-2xl font-bold text-gray-900 mb-1">{journeyMap.productName}</h2>
-                    <p className="text-xs text-gray-500 mb-2">{journeyMap.customerSegment}</p>
-                    <p className="text-sm text-gray-600">{journeyMap.executiveSummary}</p>
-                  </div>
-
-                  <div>
-                    <h3 className="text-sm font-semibold text-emerald-600 uppercase tracking-wide mb-2">Quick Wins</h3>
-                    <div className="space-y-2">
-                      {journeyMap.quickWins.slice(0, 3).map((win, idx) => (
-                        <div key={idx} className="text-sm bg-emerald-50 p-2 rounded-lg">
-                          <p className="font-medium text-gray-900">{win.win}</p>
-                          <p className="text-xs text-gray-600">Effort: {win.effort} • {win.impact}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <h3 className="text-sm font-semibold text-emerald-600 uppercase tracking-wide mb-2">Journey Stages</h3>
-                    <div className="space-y-3">
-                      {journeyMap.journeyStages.slice(0, 3).map((stage, idx) => (
-                        <div key={idx} className="text-sm border-l-2 border-emerald-300 pl-3">
-                          <p className="font-medium text-gray-900">{stage.stage}</p>
-                          <p className="text-xs text-gray-600 mt-1">Goals: {stage.customerGoals[0]}</p>
-                          {stage.painPoints.length > 0 && (
-                            <p className="text-xs text-red-600 mt-1">⚠ {stage.painPoints[0].pain}</p>
-                          )}
-                          {stage.optimizations.length > 0 && (
-                            <p className="text-xs text-emerald-700 mt-1">💡 {stage.optimizations[0].recommendation}</p>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <h3 className="text-sm font-semibold text-emerald-600 uppercase tracking-wide mb-2">Cross-Stage Opportunities</h3>
-                    <div className="space-y-2">
-                      {journeyMap.crossStageOpportunities.slice(0, 2).map((opp, idx) => (
-                        <div key={idx} className="text-sm">
-                          <p className="font-medium text-gray-900">{opp.opportunity}</p>
-                          <p className="text-xs text-gray-600">{opp.impact}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <h3 className="text-sm font-semibold text-emerald-600 uppercase tracking-wide mb-2">Key Metrics</h3>
-                    <div className="space-y-1 text-xs">
-                      <p><span className="font-medium">Conversion:</span> {journeyMap.metrics.conversion[0]}</p>
-                      <p><span className="font-medium">Engagement:</span> {journeyMap.metrics.engagement[0]}</p>
-                      <p><span className="font-medium">Retention:</span> {journeyMap.metrics.retention[0]}</p>
-                    </div>
+                <div className="bg-[#F8FAFA] border-2 border-[#DBE6E5] rounded-lg p-8 text-center sticky top-24">
+                  <div className="text-[#616B61] text-sm">
+                    <p className="font-medium mb-2">Your journey map will appear here</p>
+                    <p className="text-xs">Answer the questions to generate a comprehensive customer journey</p>
                   </div>
                 </div>
               )}
             </div>
           </div>
         </div>
-
-        <div className="text-center mt-8 text-sm text-gray-600">
-          <p>This agent maps customer journeys and identifies high-impact optimization opportunities.</p>
-          <p className="mt-1">Perfect for improving conversion, engagement, and retention metrics.</p>
-        </div>
       </div>
-    </div>
+    </>
   );
 }

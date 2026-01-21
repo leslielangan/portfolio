@@ -7,13 +7,13 @@ export default function OnboardingAgent() {
   const [messages, setMessages] = useState([
     {
       role: 'assistant',
-      content: "Hi! I'm your Onboarding Agent. I'll help you design a personalized user onboarding experience that drives adoption and engagement.\n\nLet's start with the basics: What product or feature are you onboarding users to?"
+      content: "Hi! I'm your User Onboarding Agent. I'll help you design a psychology-informed onboarding strategy that drives adoption.\n\nTo get started, tell me about your product and your users. What are you trying to help them accomplish?"
     }
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [conversationComplete, setConversationComplete] = useState(false);
-  const [onboardingPlan, setOnboardingPlan] = useState(null);
+  const [strategy, setStrategy] = useState(null);
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -24,78 +24,55 @@ export default function OnboardingAgent() {
     scrollToBottom();
   }, [messages]);
 
-  const systemPrompt = `You are an expert Onboarding Strategy Agent built by Leslie, who has trained over 2,000 users on AI fundamentals and specializes in user adoption psychology.
+  const systemPrompt = `You are an expert User Onboarding Agent built by Leslie, a VP of Product Marketing with 16+ years of experience who has trained over 2,000 users on AI fundamentals.
 
-Your role is to conduct an intelligent interview to understand the product, users, and context, then generate a comprehensive, psychology-informed onboarding strategy.
+Your role is to conduct an intelligent interview about the user's product and users, then generate a psychology-informed onboarding strategy.
 
 INTERVIEW PHASE:
-- Ask 5-7 thoughtful questions, one at a time
-- Adapt based on responses (technical vs non-technical users, AI product vs traditional software, B2B vs B2C)
-- Key areas: product complexity, user persona, learning preferences, barriers to adoption, success metrics, resources available
-- Focus on behavioral psychology and learning science
-- After gathering sufficient information, say "I have everything I need to create your onboarding strategy. Let me put this together..." and then respond with ONLY the JSON structure below
+- Ask 5-7 strategic questions about the product, target users, adoption barriers, and success metrics
+- Adapt questions based on previous answers
+- Key areas: product complexity, user motivations, learning preferences, success behaviors, adoption barriers
+- After gathering sufficient information, say "I have everything I need. Let me create your onboarding strategy..." and respond with ONLY the JSON structure
 
-ONBOARDING PLAN GENERATION:
-When ready, generate a comprehensive plan as a JSON object with this EXACT structure (respond with ONLY this JSON, no other text):
+STRATEGY GENERATION PHASE:
+Generate a comprehensive onboarding strategy as JSON with this structure (respond with ONLY this JSON):
 
 {
   "productName": "string",
-  "userPersona": "description of target user",
-  "executiveSummary": "2-3 sentence overview of the onboarding approach",
-  "learningObjectives": {
-    "primary": "main goal users should achieve",
-    "secondary": ["supporting objective 1", "supporting objective 2"]
-  },
+  "learningObjectives": ["objective 1", "objective 2", "objective 3"],
   "adoptionBarriers": [
     {
-      "barrier": "psychological or practical barrier",
-      "strategy": "how to overcome it"
+      "barrier": "barrier description",
+      "mitigation": "how to address it"
     }
   ],
   "onboardingFlow": [
     {
-      "stage": "Stage name (e.g., Welcome & Orientation)",
-      "duration": "estimated time",
-      "objectives": ["what users learn/do"],
-      "tactics": [
-        {
-          "tactic": "specific action or touchpoint",
-          "rationale": "why this works psychologically"
-        }
-      ],
-      "successMetrics": ["how to measure completion/understanding"]
+      "stage": "stage name (e.g., Welcome, Core Setup, First Value)",
+      "tactics": ["specific tactic 1", "specific tactic 2"],
+      "psychologyPrinciple": "why this works (e.g., social proof, commitment, progress)",
+      "metrics": "how to measure success"
     }
   ],
   "contentStrategy": {
-    "approach": "overall content philosophy",
-    "formats": [
-      {
-        "format": "format type (video, interactive, documentation, etc.)",
-        "when": "when to use it",
-        "why": "psychological rationale"
-      }
-    ]
+    "formats": ["video", "interactive tutorial", "documentation", "etc"],
+    "tone": "description of voice/tone",
+    "examples": ["example 1", "example 2"]
   },
-  "personalization": {
-    "segments": [
-      {
-        "segment": "user type",
-        "adaptations": ["how onboarding differs for this group"]
-      }
-    ]
-  },
+  "personalization": [
+    {
+      "segment": "user segment",
+      "approach": "tailored approach for this segment"
+    }
+  ],
   "metrics": {
     "engagement": ["metric 1", "metric 2"],
     "competency": ["metric 1", "metric 2"],
     "retention": ["metric 1", "metric 2"]
-  },
-  "timeline": "recommended rollout timeline"
-}
+  }
+}`;
 
-Draw on learning psychology, behavior change models, and AI adoption best practices. Be specific and actionable.`;
-
-const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSend = async () => {
     if (!input.trim() || isLoading) return;
 
     const userMessage = { role: 'user', content: input };
@@ -106,30 +83,27 @@ const handleSubmit = async (e) => {
     try {
       const response = await fetch('/api/chat', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          systemPrompt: systemPrompt,
-          messages: [...messages, userMessage].map(msg => ({
-            role: msg.role,
-            content: msg.content
-          }))
+          systemPrompt,
+          messages: [...messages, userMessage]
         })
       });
 
       const data = await response.json();
       const assistantMessage = data.content[0].text;
 
-      const jsonMatch = assistantMessage.match(/\{[\s\S]*\}/);
+      const jsonMatch = assistantMessage.match(/```(?:json)?\s*(\{[\s\S]*?\})\s*```/) || 
+                       assistantMessage.match(/(\{[\s\S]*\})/);
+      
       if (jsonMatch) {
         try {
-          const planData = JSON.parse(jsonMatch[0]);
-          setOnboardingPlan(planData);
+          const strategyData = JSON.parse(jsonMatch[1]);
+          setStrategy(strategyData);
           setConversationComplete(true);
           setMessages(prev => [...prev, {
             role: 'assistant',
-            content: "✨ Your onboarding strategy is ready! Review it below, download it, or start a new plan."
+            content: "Perfect! I've created your onboarding strategy. You can view it in the panel and download it."
           }]);
         } catch (e) {
           setMessages(prev => [...prev, { role: 'assistant', content: assistantMessage }]);
@@ -140,7 +114,7 @@ const handleSubmit = async (e) => {
     } catch (error) {
       setMessages(prev => [...prev, {
         role: 'assistant',
-        content: 'I apologize, but I encountered an error. Please try again.'
+        content: "I encountered an error. Please try again."
       }]);
     } finally {
       setIsLoading(false);
@@ -148,282 +122,240 @@ const handleSubmit = async (e) => {
   };
 
   const handleReset = () => {
-    setMessages([
-      {
-        role: 'assistant',
-        content: "Hi! I'm your Onboarding Agent. I'll help you design a personalized user onboarding experience that drives adoption and engagement.\n\nLet's start with the basics: What product or feature are you onboarding users to?"
-      }
-    ]);
-    setOnboardingPlan(null);
+    setMessages([{
+      role: 'assistant',
+      content: "Hi! I'm your User Onboarding Agent. I'll help you design a psychology-informed onboarding strategy that drives adoption.\n\nTo get started, tell me about your product and your users. What are you trying to help them accomplish?"
+    }]);
+    setStrategy(null);
     setConversationComplete(false);
   };
 
-  const handleDownload = () => {
-    const planText = `
-ONBOARDING STRATEGY: ${onboardingPlan.productName}
-
-USER PERSONA
-${onboardingPlan.userPersona}
-
-EXECUTIVE SUMMARY
-${onboardingPlan.executiveSummary}
+  const downloadStrategy = () => {
+    const strategyText = `ONBOARDING STRATEGY: ${strategy.productName}
 
 LEARNING OBJECTIVES
-Primary: ${onboardingPlan.learningObjectives.primary}
-Secondary: 
-${onboardingPlan.learningObjectives.secondary.map(obj => `  • ${obj}`).join('\n')}
+${strategy.learningObjectives.map((obj, i) => `${i + 1}. ${obj}`).join('\n')}
 
-ADOPTION BARRIERS & STRATEGIES
-${onboardingPlan.adoptionBarriers.map(b => `
-Barrier: ${b.barrier}
-Strategy: ${b.strategy}
+ADOPTION BARRIERS & MITIGATION
+${strategy.adoptionBarriers.map((b, i) => `
+${i + 1}. Barrier: ${b.barrier}
+   Mitigation: ${b.mitigation}
 `).join('\n')}
 
 ONBOARDING FLOW
-${onboardingPlan.onboardingFlow.map(stage => `
-${stage.stage} (${stage.duration})
-Objectives: ${stage.objectives.join(', ')}
-
-Tactics:
-${stage.tactics.map(t => `  • ${t.tactic}
-    Rationale: ${t.rationale}`).join('\n')}
-
-Success Metrics: ${stage.successMetrics.join(', ')}
+${strategy.onboardingFlow.map((stage, i) => `
+Stage ${i + 1}: ${stage.stage}
+Tactics: ${stage.tactics.join(', ')}
+Psychology Principle: ${stage.psychologyPrinciple}
+Metrics: ${stage.metrics}
 `).join('\n')}
 
 CONTENT STRATEGY
-Approach: ${onboardingPlan.contentStrategy.approach}
-
-Formats:
-${onboardingPlan.contentStrategy.formats.map(f => `
-  ${f.format}
-  When: ${f.when}
-  Why: ${f.why}
-`).join('\n')}
+Formats: ${strategy.contentStrategy.formats.join(', ')}
+Tone: ${strategy.contentStrategy.tone}
+Examples: ${strategy.contentStrategy.examples.join(', ')}
 
 PERSONALIZATION
-${onboardingPlan.personalization.segments.map(s => `
-${s.segment}:
-${s.adaptations.map(a => `  • ${a}`).join('\n')}
+${strategy.personalization.map((p, i) => `
+${i + 1}. Segment: ${p.segment}
+   Approach: ${p.approach}
 `).join('\n')}
 
-KEY METRICS
-Engagement: ${onboardingPlan.metrics.engagement.join(', ')}
-Competency: ${onboardingPlan.metrics.competency.join(', ')}
-Retention: ${onboardingPlan.metrics.retention.join(', ')}
-
-TIMELINE
-${onboardingPlan.timeline}
+METRICS
+Engagement: ${strategy.metrics.engagement.join(', ')}
+Competency: ${strategy.metrics.competency.join(', ')}
+Retention: ${strategy.metrics.retention.join(', ')}
 
 ---
-Generated by Onboarding Agent
-Built by Leslie Langan
+Generated by User Onboarding Agent
+Built by Leslie Langan | Product Marketing Expert
 `;
 
-    const blob = new Blob([planText], { type: 'text/plain' });
+    const blob = new Blob([strategyText], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `Onboarding-Strategy-${onboardingPlan.productName.replace(/\s+/g, '-')}.txt`;
+    a.download = `Onboarding-Strategy-${strategy.productName.replace(/\s+/g, '-')}.txt`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   };
 
-return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50 p-4">
-      {/* Back Button */}
-      <button
-        onClick={() => navigate('/')}
-        className="fixed top-4 left-4 z-50 flex items-center gap-2 px-4 py-2 bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow text-gray-700 font-medium"
-      >
-        <HomeIcon className="w-4 h-4" />
-        Back to Portfolio
-      </button>
+  return (
+    <>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap');
+        
+        body::after {
+          content: '';
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300"><filter id="n"><feTurbulence baseFrequency="0.9" numOctaves="3"/></filter><rect width="300" height="300" filter="url(%23n)" opacity="0.015"/></svg>');
+          pointer-events: none;
+          z-index: 9999;
+        }
+      `}</style>
 
-      <div className="max-w-5xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-8 pt-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-purple-100 rounded-full mb-4">
-            <svg className="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-            </svg>
+      <div className="min-h-screen bg-white p-4 md:p-8">
+        {/* Back Button */}
+        <button
+          onClick={() => navigate('/')}
+          className="fixed top-6 left-6 z-50 flex items-center gap-2 px-6 py-3 bg-white rounded border-2 border-[#DBE6E5] hover:border-[#536B79] transition-all text-[#536B79] hover:text-[#03110E] font-medium shadow-sm"
+        >
+          <HomeIcon className="w-4 h-4" />
+          <span className="hidden sm:inline">Back to Portfolio</span>
+          <span className="sm:hidden">Back</span>
+        </button>
+
+        <div className="max-w-7xl mx-auto pt-20 md:pt-16">
+          {/* Header */}
+          <div className="text-center mb-12">
+            <h1 className="text-5xl md:text-7xl font-black text-[#03110E] mb-4" style={{ letterSpacing: '-2px' }}>
+              User <span className="text-[#536B79]" style={{ fontFamily: "'Dancing Script', cursive", fontWeight: 700 }}>Onboarding</span> Agent
+            </h1>
           </div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Onboarding Agent</h1>
-          <p className="text-gray-600">Psychology-informed user onboarding strategy</p>
-          <p className="text-sm text-gray-500 mt-1">Built by Leslie Langan</p>
-        </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Chat Interface */}
-          <div className="lg:col-span-2">
-            <div className="bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col" style={{ height: '600px' }}>
-              {/* Messages */}
-              <div className="flex-1 overflow-y-auto p-6 space-y-4">
-                {messages.map((msg, idx) => (
-                  <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                    <div className={`max-w-[80%] rounded-2xl px-4 py-3 ${
-                      msg.role === 'user' 
-                        ? 'bg-purple-600 text-white' 
-                        : 'bg-gray-100 text-gray-900'
-                    }`}>
-                      <p className="whitespace-pre-wrap">{msg.content}</p>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Chat Interface */}
+            <div className="lg:col-span-2">
+              <div className="bg-white border-2 border-[#DBE6E5] rounded-lg shadow-sm overflow-hidden flex flex-col" style={{ height: '600px' }}>
+                {/* Messages */}
+                <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                  {messages.map((msg, idx) => (
+                    <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                      <div className={`max-w-[80%] rounded-lg px-4 py-3 ${
+                        msg.role === 'user' 
+                          ? 'bg-[#536B79] text-white' 
+                          : 'bg-[#F8FAFA] text-[#03110E] border border-[#DBE6E5]'
+                      }`}>
+                        <p className="whitespace-pre-wrap text-sm leading-relaxed">{msg.content}</p>
+                      </div>
                     </div>
-                  </div>
-                ))}
-                {isLoading && (
-                  <div className="flex justify-start">
-                    <div className="bg-gray-100 rounded-2xl px-4 py-3">
-                      <Loader2 className="w-5 h-5 animate-spin text-purple-600" />
+                  ))}
+                  {isLoading && (
+                    <div className="flex justify-start">
+                      <div className="bg-[#F8FAFA] border border-[#DBE6E5] rounded-lg px-4 py-3">
+                        <Loader2 className="w-5 h-5 animate-spin text-[#536B79]" />
+                      </div>
                     </div>
-                  </div>
-                )}
-                <div ref={messagesEndRef} />
-              </div>
+                  )}
+                  <div ref={messagesEndRef} />
+                </div>
 
-              {/* Input */}
-              {!conversationComplete && (
-                <form onSubmit={handleSubmit} className="border-t border-gray-200 p-4">
+                {/* Input */}
+                <div className="border-t-2 border-[#DBE6E5] p-4 bg-[#FAFBFB]">
                   <div className="flex gap-2">
                     <input
                       type="text"
                       value={input}
                       onChange={(e) => setInput(e.target.value)}
-                      placeholder="Type your response..."
-                      className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
-                      disabled={isLoading}
+                      onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+                      placeholder={conversationComplete ? "Strategy complete!" : "Type your response..."}
+                      disabled={conversationComplete || isLoading}
+                      className="flex-1 px-4 py-3 border-2 border-[#DBE6E5] rounded-lg focus:outline-none focus:border-[#536B79] disabled:opacity-50 disabled:cursor-not-allowed text-[#03110E] placeholder-[#616B61]"
                     />
                     <button
-                      type="submit"
-                      disabled={isLoading || !input.trim()}
-                      className="px-6 py-3 bg-purple-600 text-white rounded-xl hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      onClick={handleSend}
+                      disabled={conversationComplete || isLoading || !input.trim()}
+                      className="px-6 py-3 bg-[#536B79] text-white rounded-lg hover:bg-[#03110E] disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
                     >
                       <Send className="w-5 h-5" />
                     </button>
                   </div>
-                </form>
-              )}
-
-              {conversationComplete && (
-                <div className="border-t border-gray-200 p-4 bg-gray-50 flex gap-3">
-                  <button
-                    onClick={handleReset}
-                    className="flex-1 px-4 py-3 bg-white border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
-                  >
-                    <RefreshCw className="w-4 h-4" />
-                    New Strategy
-                  </button>
-                  <button
-                    onClick={handleDownload}
-                    className="flex-1 px-4 py-3 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition-colors flex items-center justify-center gap-2"
-                  >
-                    <Download className="w-4 h-4" />
-                    Download
-                  </button>
                 </div>
+              </div>
+
+              {/* Reset Button */}
+              {conversationComplete && (
+                <button
+                  onClick={handleReset}
+                  className="mt-4 w-full px-6 py-3 bg-white border-2 border-[#DBE6E5] text-[#536B79] rounded-lg hover:border-[#536B79] hover:text-[#03110E] transition-all font-medium flex items-center justify-center gap-2"
+                >
+                  <RefreshCw className="w-4 h-4" />
+                  Start New Strategy
+                </button>
               )}
             </div>
-          </div>
 
-          {/* Plan Display */}
-          <div className="lg:col-span-1">
-            <div className="bg-white rounded-2xl shadow-xl p-6" style={{ height: '600px', overflowY: 'auto' }}>
-              {!onboardingPlan ? (
-                <div className="h-full flex items-center justify-center text-center px-4">
-                  <div>
-                    <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <svg className="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                      </svg>
-                    </div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">Your Strategy Will Appear Here</h3>
-                    <p className="text-sm text-gray-600">Answer questions to generate your customized onboarding plan</p>
+            {/* Strategy Display */}
+            <div className="lg:col-span-1">
+              {strategy ? (
+                <div className="bg-white border-2 border-[#DBE6E5] rounded-lg shadow-sm p-6 sticky top-24">
+                  <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-2xl font-bold text-[#03110E]">Your Strategy</h2>
+                    <button
+                      onClick={downloadStrategy}
+                      className="p-2 text-[#536B79] hover:bg-[#F8FAFA] rounded-lg transition-colors"
+                      title="Download Strategy"
+                    >
+                      <Download className="w-5 h-5" />
+                    </button>
                   </div>
+
+                  <div className="space-y-6 max-h-[500px] overflow-y-auto pr-2">
+                    <div>
+                      <h3 className="font-bold text-[#536B79] mb-2 text-sm uppercase tracking-wider">Product</h3>
+                      <p className="text-[#03110E] text-sm">{strategy.productName}</p>
+                    </div>
+
+                    <div>
+                      <h3 className="font-bold text-[#536B79] mb-2 text-sm uppercase tracking-wider">Learning Objectives</h3>
+                      <ul className="space-y-1 text-sm">
+                        {strategy.learningObjectives.map((obj, i) => (
+                          <li key={i} className="flex gap-2 text-[#03110E]">
+                            <span className="text-[#536B79]">•</span>
+                            <span>{obj}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div>
+                      <h3 className="font-bold text-[#536B79] mb-2 text-sm uppercase tracking-wider">Onboarding Flow</h3>
+                      <div className="space-y-3">
+                        {strategy.onboardingFlow.map((stage, i) => (
+                          <div key={i} className="text-sm">
+                            <p className="font-semibold text-[#03110E]">{stage.stage}</p>
+                            <p className="text-[#616B61] text-xs mt-1">{stage.psychologyPrinciple}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <h3 className="font-bold text-[#536B79] mb-2 text-sm uppercase tracking-wider">Key Metrics</h3>
+                      <div className="space-y-2 text-sm text-[#03110E]">
+                        <div>
+                          <span className="font-semibold">Engagement:</span>
+                          <p className="text-[#616B61] text-xs ml-2">{strategy.metrics.engagement.join(', ')}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={downloadStrategy}
+                    className="mt-6 w-full px-4 py-3 bg-[#536B79] text-white rounded-lg hover:bg-[#03110E] transition-colors font-medium text-sm uppercase tracking-wider"
+                  >
+                    Download Full Strategy
+                  </button>
                 </div>
               ) : (
-                <div className="space-y-6">
-                  <div>
-                    <h2 className="text-2xl font-bold text-gray-900 mb-1">{onboardingPlan.productName}</h2>
-                    <p className="text-xs text-gray-500 mb-2">{onboardingPlan.userPersona}</p>
-                    <p className="text-sm text-gray-600">{onboardingPlan.executiveSummary}</p>
-                  </div>
-
-                  <div>
-                    <h3 className="text-sm font-semibold text-purple-600 uppercase tracking-wide mb-2">Learning Objectives</h3>
-                    <p className="text-sm mb-2"><span className="font-medium">Primary:</span> {onboardingPlan.learningObjectives.primary}</p>
-                    <div className="space-y-1">
-                      {onboardingPlan.learningObjectives.secondary.slice(0, 2).map((obj, idx) => (
-                        <p key={idx} className="text-xs text-gray-700">• {obj}</p>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <h3 className="text-sm font-semibold text-purple-600 uppercase tracking-wide mb-2">Adoption Barriers</h3>
-                    <div className="space-y-2">
-                      {onboardingPlan.adoptionBarriers.slice(0, 2).map((barrier, idx) => (
-                        <div key={idx} className="text-sm">
-                          <p className="font-medium text-gray-900">{barrier.barrier}</p>
-                          <p className="text-xs text-gray-600">{barrier.strategy}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <h3 className="text-sm font-semibold text-purple-600 uppercase tracking-wide mb-2">Onboarding Flow</h3>
-                    <div className="space-y-3">
-                      {onboardingPlan.onboardingFlow.slice(0, 2).map((stage, idx) => (
-                        <div key={idx} className="text-sm">
-                          <p className="font-medium">{stage.stage}</p>
-                          <p className="text-xs text-gray-600">{stage.duration}</p>
-                          <div className="mt-1 space-y-1">
-                            {stage.tactics.slice(0, 1).map((tactic, i) => (
-                              <div key={i} className="text-xs">
-                                <p className="text-gray-900">• {tactic.tactic}</p>
-                                <p className="text-gray-500 ml-3">{tactic.rationale}</p>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <h3 className="text-sm font-semibold text-purple-600 uppercase tracking-wide mb-2">Content Strategy</h3>
-                    <p className="text-sm mb-2">{onboardingPlan.contentStrategy.approach}</p>
-                    <div className="space-y-2">
-                      {onboardingPlan.contentStrategy.formats.slice(0, 2).map((format, idx) => (
-                        <div key={idx} className="text-xs">
-                          <p className="font-medium text-gray-900">{format.format}</p>
-                          <p className="text-gray-600">{format.why}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <h3 className="text-sm font-semibold text-purple-600 uppercase tracking-wide mb-2">Key Metrics</h3>
-                    <div className="space-y-1 text-xs">
-                      <p><span className="font-medium">Engagement:</span> {onboardingPlan.metrics.engagement[0]}</p>
-                      <p><span className="font-medium">Competency:</span> {onboardingPlan.metrics.competency[0]}</p>
-                      <p><span className="font-medium">Retention:</span> {onboardingPlan.metrics.retention[0]}</p>
-                    </div>
+                <div className="bg-[#F8FAFA] border-2 border-[#DBE6E5] rounded-lg p-8 text-center sticky top-24">
+                  <div className="text-[#616B61] text-sm">
+                    <p className="font-medium mb-2">Your strategy will appear here</p>
+                    <p className="text-xs">Answer the questions to generate a comprehensive onboarding plan</p>
                   </div>
                 </div>
               )}
             </div>
           </div>
         </div>
-
-        {/* Footer */}
-        <div className="text-center mt-8 text-sm text-gray-600">
-          <p>This agent applies learning psychology and behavioral science to create effective onboarding.</p>
-          <p className="mt-1">Based on experience training 2,000+ users on AI fundamentals.</p>
-        </div>
       </div>
-    </div>
+    </>
   );
 }

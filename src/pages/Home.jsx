@@ -1,184 +1,348 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Sparkles, Target, Users, Map, ArrowRight, Linkedin, Mail, ExternalLink } from 'lucide-react';
 
 export default function Home() {
   const navigate = useNavigate();
 
-  const agents = [
-    {
-      id: 'gtm',
-      name: 'GTM Strategy Agent',
-      path: '/gtm-agent',
-      icon: Target,
-      color: 'indigo',
-      description: 'AI-powered go-to-market strategy generation that conducts intelligent interviews and produces comprehensive GTM plans.',
-      features: [
-        'Adaptive questioning based on product type',
-        'Strategic positioning & messaging frameworks',
-        'Channel strategy with prioritization',
-        'Launch phases with metrics & KPIs'
-      ],
-      gradient: 'from-indigo-50 to-purple-50'
-    },
-    {
-      id: 'onboarding',
-      name: 'Onboarding Agent',
-      path: '/onboarding-agent',
-      icon: Users,
-      color: 'purple',
-      description: 'Psychology-informed user onboarding strategy based on training 2,000+ users on AI fundamentals.',
-      features: [
-        'Learning psychology & behavior change models',
-        'Adoption barrier identification & mitigation',
-        'Personalized onboarding flows',
-        'Content strategy with format recommendations'
-      ],
-      gradient: 'from-purple-50 to-pink-50'
-    },
-    {
-      id: 'journey',
-      name: 'Customer Journey Agent',
-      path: '/customer-journey-agent',
-      icon: Map,
-      color: 'emerald',
-      description: 'Comprehensive customer journey mapping with optimization recommendations for conversion and retention.',
-      features: [
-        'Multi-stage journey analysis',
-        'Pain point & friction identification',
-        'Quick wins with effort/impact ratings',
-        'Personalization by customer segment'
-      ],
-      gradient: 'from-emerald-50 to-teal-50'
-    }
-  ];
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      {/* Hero Section */}
-      <div className="max-w-6xl mx-auto px-4 pt-20 pb-16">
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full mb-6">
-            <Sparkles className="w-10 h-10 text-white" />
+    <div className="min-h-screen bg-white text-[#03110E]">
+      {/* Paper grain texture overlay */}
+      <div 
+        className="fixed inset-0 pointer-events-none z-[9999] opacity-[0.015]"
+        style={{
+          backgroundImage: `url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300"><filter id="n"><feTurbulence baseFrequency="0.9" numOctaves="3"/></filter><rect width="300" height="300" filter="url(%23n)"/></svg>')`
+        }}
+      />
+
+      {/* Navigation */}
+      <nav className="sticky top-0 bg-white/98 border-b border-[#DBE6E5] z-[100] py-7">
+        <div className="max-w-[1200px] mx-auto px-20 flex justify-between items-center">
+          <div className="text-base font-bold text-[#03110E] uppercase tracking-[2px]">
+            Leslie Langan
           </div>
-          <h1 className="text-5xl font-bold text-gray-900 mb-4">
+          <ul className="flex gap-11 list-none">
+            <li><a href="#home" className="no-underline text-[#536B79] font-medium text-sm uppercase tracking-[1px] hover:text-[#26413C] transition-colors">Home</a></li>
+            <li><a href="#agents" className="no-underline text-[#536B79] font-medium text-sm uppercase tracking-[1px] hover:text-[#26413C] transition-colors">Agents</a></li>
+            <li><a href="#work" className="no-underline text-[#536B79] font-medium text-sm uppercase tracking-[1px] hover:text-[#26413C] transition-colors">Work</a></li>
+            <li><a href="#about" className="no-underline text-[#536B79] font-medium text-sm uppercase tracking-[1px] hover:text-[#26413C] transition-colors">About</a></li>
+            <li><a href="https://www.linkedin.com/in/leslielangan" target="_blank" rel="noopener noreferrer" className="no-underline text-[#536B79] font-medium text-sm uppercase tracking-[1px] hover:text-[#26413C] transition-colors">LinkedIn →</a></li>
+          </ul>
+        </div>
+      </nav>
+
+      <div className="max-w-[1200px] mx-auto px-20">
+        {/* Hero Section */}
+        <section className="py-[120px] pb-20 text-center" id="home">
+          <h1 className="text-[84px] font-bold text-[#536B79] leading-tight mb-5" style={{ fontFamily: "'Dancing Script', cursive" }}>
             Leslie Langan
           </h1>
-          <p className="text-xl text-gray-600 mb-2">
-            VP Product Marketing | AI Strategy & User Adoption Specialist
+          <h2 className="text-[120px] font-black text-[#26413C] leading-none mb-12" style={{ letterSpacing: '-4px' }}>
+            Product Marketer
+          </h2>
+          <p className="text-[22px] text-[#536B79] max-w-[700px] mx-auto mb-15 leading-relaxed">
+            Building AI-powered tools that make<br />go-to-market strategy accessible and actionable.
           </p>
-          <p className="text-gray-500 max-w-2xl mx-auto">
-            16+ years building go-to-market strategies and training teams on AI fundamentals. 
-            Specializing in human-centered AI experiences and product-led growth.
-          </p>
-          
-          {/* Social Links */}
-          <div className="flex items-center justify-center gap-4 mt-6">
-            <a 
-              href="https://www.linkedin.com/in/leslielangan" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 px-4 py-2 bg-white rounded-lg shadow hover:shadow-md transition-shadow text-gray-700"
+        </section>
+      </div>
+
+      {/* Stats Bar */}
+      <div className="bg-[#26413C] py-14 -mx-20 shadow-[0_8px_24px_rgba(38,65,60,0.2)]">
+        <div className="grid grid-cols-3 max-w-[900px] mx-auto text-center">
+          <div>
+            <div className="text-[28px] font-bold text-[#DBE6E5] leading-tight mb-2 tracking-wide">Product Marketing</div>
+            <div className="text-[15px] text-[#DBE6E5]/80 uppercase tracking-[1.5px] font-semibold">Expert</div>
+          </div>
+          <div>
+            <div className="text-[28px] font-bold text-[#DBE6E5] leading-tight mb-2 tracking-wide">AI Strategy</div>
+            <div className="text-[15px] text-[#DBE6E5]/80 uppercase tracking-[1.5px] font-semibold">Leader</div>
+          </div>
+          <div>
+            <div className="text-[28px] font-bold text-[#DBE6E5] leading-tight mb-2 tracking-wide">Go-to-Market</div>
+            <div className="text-[15px] text-[#DBE6E5]/80 uppercase tracking-[1.5px] font-semibold">Architect</div>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-[1200px] mx-auto px-20">
+        {/* AI Agents Section */}
+        <section className="py-[140px]" id="agents">
+          <div className="mb-20">
+            <h2 className="text-[88px] font-black text-[#03110E] leading-[0.95] pb-6 border-b-[6px] border-[#26413C] inline-block" style={{ letterSpacing: '-3px' }}>
+              AI-Powered <span className="text-[#536B79]" style={{ fontFamily: "'Dancing Script', cursive", fontWeight: 700 }}>Agents</span>
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-3 gap-9">
+            {/* Card 1 */}
+            <div 
+              className="bg-white p-12 px-10 border-2 border-[#DBE6E5] rounded-sm relative cursor-pointer transition-all duration-300 shadow-[0_1px_3px_rgba(0,0,0,0.03),0_4px_8px_rgba(0,0,0,0.04)] hover:translate-y-[-6px] hover:shadow-[0_4px_8px_rgba(0,0,0,0.06),0_16px_32px_rgba(0,0,0,0.08)] after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[6px] after:bg-[#26413C] after:transition-all"
+              onClick={() => navigate('/gtm-agent')}
             >
-              <Linkedin className="w-4 h-4" />
-              LinkedIn
-            </a>
-          </div>
-        </div>
+              <div className="text-[96px] font-bold text-[#DBE6E5] leading-none mb-4" style={{ fontFamily: "'Dancing Script', cursive" }}>01</div>
+              <h3 className="text-[26px] font-extrabold text-[#03110E] mb-7 leading-tight">GTM Strategy Agent</h3>
+              <button className="inline-block text-[#26413C] font-bold text-sm uppercase tracking-[1px] transition-all hover:tracking-[2px]">
+                Try It →
+              </button>
+            </div>
 
-        {/* Introduction */}
-        <div className="bg-white rounded-2xl shadow-xl p-8 mb-16">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Building AI That People Actually Want to Use</h2>
-          <p className="text-gray-600 mb-4">
-           I love the translation layer of product marketing—figuring out why a product fits, 
-what makes someone care, how to bridge what's possible with what's actually useful. 
-But I'm increasingly focused on AI because I believe we're at a turning point. 
-</p>
-          <p className="text-gray-600 mb-4">
-            AI is 
-going to fundamentally change how humans interact with technology, with each other, 
-and with the world around them. And honestly? There's a real risk of a dystopian turn 
-here. I want to be one of the people making sure that as this technology advances, it 
-does so in a way that has a positive impact—on the people using it and on society as 
-a whole. 
-          </p>
-
-          <p className="text-gray-600">
-            These agents are part of that work: learning, tinkering, testing what it looks 
-like to build AI that serves people well. I'm figuring this out as I go, but I think 
-that's the point.
-          </p>
-        </div>
-
-        {/* Agent Cards */}
-        <div className="mb-16">
-          <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Interactive AI Agents</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {agents.map((agent) => {
-              const IconComponent = agent.icon;
-              return (
-                <div 
-                  key={agent.id}
-                  className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden group cursor-pointer"
-                  onClick={() => navigate(agent.path)}
-                >
-                  <div className={`bg-gradient-to-br ${agent.gradient} p-6`}>
-                    <div className={`inline-flex items-center justify-center w-12 h-12 bg-${agent.color}-100 rounded-lg mb-4`}>
-                      <IconComponent className={`w-6 h-6 text-${agent.color}-600`} />
-                    </div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">{agent.name}</h3>
-                    <p className="text-sm text-gray-600">{agent.description}</p>
-                  </div>
-                  
-                  <div className="p-6">
-                    <h4 className="text-sm font-semibold text-gray-700 mb-3">Key Features:</h4>
-                    <ul className="space-y-2 mb-6">
-                      {agent.features.map((feature, idx) => (
-                        <li key={idx} className="flex items-start gap-2 text-sm text-gray-600">
-                          <span className={`text-${agent.color}-500 mt-0.5`}>•</span>
-                          <span>{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
-                    
-                    <button 
-                      className={`w-full flex items-center justify-center gap-2 px-4 py-3 bg-${agent.color}-600 text-white rounded-lg hover:bg-${agent.color}-700 transition-colors group-hover:gap-3`}
-                    >
-                      Try It Live
-                      <ArrowRight className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-
-
-        {/* CTA Section */}
-        <div className="bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl shadow-xl p-8 text-center text-white">
-          <h2 className="text-3xl font-bold mb-4">Let's Build Something Together</h2>
-          <p className="text-indigo-100 mb-6 max-w-2xl mx-auto">
-            Whether you're looking for strategic product marketing expertise or AI adoption consulting, I'd love to connect.
-          </p>
-          <div className="flex items-center justify-center gap-4">
-            <a 
-              href="https://www.linkedin.com/in/leslielangan"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-6 py-3 bg-indigo-700 text-white rounded-lg font-semibold hover:bg-indigo-800 transition-colors flex items-center gap-2"
+            {/* Card 2 */}
+            <div 
+              className="bg-white p-12 px-10 border-2 border-[#DBE6E5] rounded-sm relative cursor-pointer transition-all duration-300 shadow-[0_1px_3px_rgba(0,0,0,0.03),0_4px_8px_rgba(0,0,0,0.04)] hover:translate-y-[-6px] hover:shadow-[0_4px_8px_rgba(0,0,0,0.06),0_16px_32px_rgba(0,0,0,0.08)] after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[6px] after:bg-[#536B79] after:transition-all"
+              onClick={() => navigate('/onboarding-agent')}
             >
-              View LinkedIn
-              <ExternalLink className="w-4 h-4" />
-            </a>
+              <div className="text-[96px] font-bold text-[#DBE6E5] leading-none mb-4" style={{ fontFamily: "'Dancing Script', cursive" }}>02</div>
+              <h3 className="text-[26px] font-extrabold text-[#03110E] mb-7 leading-tight">Onboarding Agent</h3>
+              <button className="inline-block text-[#26413C] font-bold text-sm uppercase tracking-[1px] transition-all hover:tracking-[2px]">
+                Try It →
+              </button>
+            </div>
+
+            {/* Card 3 */}
+            <div 
+              className="bg-white p-12 px-10 border-2 border-[#DBE6E5] rounded-sm relative cursor-pointer transition-all duration-300 shadow-[0_1px_3px_rgba(0,0,0,0.03),0_4px_8px_rgba(0,0,0,0.04)] hover:translate-y-[-6px] hover:shadow-[0_4px_8px_rgba(0,0,0,0.06),0_16px_32px_rgba(0,0,0,0.08)] after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[6px] after:bg-[#616B61] after:transition-all"
+              onClick={() => navigate('/customer-journey-agent')}
+            >
+              <div className="text-[96px] font-bold text-[#DBE6E5] leading-none mb-4" style={{ fontFamily: "'Dancing Script', cursive" }}>03</div>
+              <h3 className="text-[26px] font-extrabold text-[#03110E] mb-7 leading-tight">Customer Journey Agent</h3>
+              <button className="inline-block text-[#26413C] font-bold text-sm uppercase tracking-[1px] transition-all hover:tracking-[2px]">
+                Try It →
+              </button>
+            </div>
+          </div>
+        </section>
+
+        {/* Case Studies Section */}
+        <section className="py-[140px]" id="work">
+          <div className="mb-20">
+            <h2 className="text-[88px] font-black text-[#03110E] leading-[0.95] pb-6 border-b-[6px] border-[#26413C] inline-block" style={{ letterSpacing: '-3px' }}>
+              Case Studies & <span className="text-[#536B79]" style={{ fontFamily: "'Dancing Script', cursive", fontWeight: 700 }}>Work</span>
+            </h2>
+          </div>
+
+          {/* Featured Case Studies */}
+          <h3 className="text-[36px] font-bold text-[#03110E] mb-10">Featured Case Studies</h3>
+          <div className="grid grid-cols-2 gap-12 mb-24">
+            {/* Abakus - Game Theory Education */}
+            <div className="bg-white border-2 border-[#DBE6E5] rounded-sm overflow-hidden transition-all duration-300 shadow-[0_2px_4px_rgba(0,0,0,0.04),0_8px_16px_rgba(0,0,0,0.06)] hover:translate-y-[-6px] hover:border-[#26413C] hover:shadow-[0_6px_12px_rgba(0,0,0,0.08),0_20px_40px_rgba(0,0,0,0.1)]">
+              <div className="h-64 bg-[#DBE6E5] flex items-center justify-center text-[#536B79] font-semibold">
+                [Abakus Preview]
+              </div>
+              <div className="p-10">
+                <span className="text-xs text-[#616B61] uppercase tracking-[1.5px] font-semibold">Case Study</span>
+                <h3 className="text-[32px] font-black text-[#03110E] mt-3 mb-5 leading-tight">Making Nobel Prize-Winning Math Accessible</h3>
+                <p className="text-[15px] text-[#536B79] leading-relaxed mb-7">
+                  Educational content strategy for game theory attribution platform. Created video series and white paper still cited 10+ years later.
+                </p>
+                <a href="#" className="inline-block text-[#26413C] font-bold text-sm uppercase tracking-[1px] transition-all hover:tracking-[2px]">
+                  View PDF →
+                </a>
+              </div>
+            </div>
+
+            {/* Cuebiq COVID-19 */}
+            <div className="bg-white border-2 border-[#DBE6E5] rounded-sm overflow-hidden transition-all duration-300 shadow-[0_2px_4px_rgba(0,0,0,0.04),0_8px_16px_rgba(0,0,0,0.06)] hover:translate-y-[-6px] hover:border-[#26413C] hover:shadow-[0_6px_12px_rgba(0,0,0,0.08),0_20px_40px_rgba(0,0,0,0.1)]">
+              <div className="h-64 bg-[#DBE6E5] flex items-center justify-center text-[#536B79] font-semibold">
+                [Cuebiq Preview]
+              </div>
+              <div className="p-10">
+                <span className="text-xs text-[#616B61] uppercase tracking-[1.5px] font-semibold">Case Study</span>
+                <h3 className="text-[32px] font-black text-[#03110E] mt-3 mb-5 leading-tight">Marketing in a Crisis</h3>
+                <p className="text-[15px] text-[#536B79] leading-relaxed mb-7">
+                  Launched COVID-19 data products in two weeks. Partnerships with CDC, Oxford, Johns Hopkins, UNICEF.
+                </p>
+                <a href="#" className="inline-block text-[#26413C] font-bold text-sm uppercase tracking-[1px] transition-all hover:tracking-[2px]">
+                  View PDF →
+                </a>
+              </div>
+            </div>
+
+            {/* LiveRamp IdentityLink */}
+            <div className="bg-white border-2 border-[#DBE6E5] rounded-sm overflow-hidden transition-all duration-300 shadow-[0_2px_4px_rgba(0,0,0,0.04),0_8px_16px_rgba(0,0,0,0.06)] hover:translate-y-[-6px] hover:border-[#26413C] hover:shadow-[0_6px_12px_rgba(0,0,0,0.08),0_20px_40px_rgba(0,0,0,0.1)]">
+              <div className="h-64 bg-[#DBE6E5] flex items-center justify-center text-[#536B79] font-semibold">
+                [LiveRamp Preview]
+              </div>
+              <div className="p-10">
+                <span className="text-xs text-[#616B61] uppercase tracking-[1.5px] font-semibold">Case Study</span>
+                <h3 className="text-[32px] font-black text-[#03110E] mt-3 mb-5 leading-tight">Launching IdentityLink</h3>
+                <p className="text-[15px] text-[#536B79] leading-relaxed mb-7">
+                  Three-phase GTM strategy for people-based marketing. Secured partnerships with Adobe, MediaMath, The Trade Desk.
+                </p>
+                <a href="#" className="inline-block text-[#26413C] font-bold text-sm uppercase tracking-[1px] transition-all hover:tracking-[2px]">
+                  View PDF →
+                </a>
+              </div>
+            </div>
+
+            {/* Yardline CaaS */}
+            <div className="bg-white border-2 border-[#DBE6E5] rounded-sm overflow-hidden transition-all duration-300 shadow-[0_2px_4px_rgba(0,0,0,0.04),0_8px_16px_rgba(0,0,0,0.06)] hover:translate-y-[-6px] hover:border-[#26413C] hover:shadow-[0_6px_12px_rgba(0,0,0,0.08),0_20px_40px_rgba(0,0,0,0.1)]">
+              <div className="h-64 bg-[#DBE6E5] flex items-center justify-center text-[#536B79] font-semibold">
+                [Yardline Preview]
+              </div>
+              <div className="p-10">
+                <span className="text-xs text-[#616B61] uppercase tracking-[1.5px] font-semibold">Case Study</span>
+                <h3 className="text-[32px] font-black text-[#03110E] mt-3 mb-5 leading-tight">Building a Partner Program from Zero</h3>
+                <p className="text-[15px] text-[#536B79] leading-relaxed mb-7">
+                  Capital-as-a-Service for e-commerce. Generated 400% YoY growth for Nicole + Brizee. Acquired by Thrasio.
+                </p>
+                <a href="#" className="inline-block text-[#26413C] font-bold text-sm uppercase tracking-[1px] transition-all hover:tracking-[2px]">
+                  View PDF →
+                </a>
+              </div>
+            </div>
+
+            {/* RampPups */}
+            <div className="bg-white border-2 border-[#DBE6E5] rounded-sm overflow-hidden transition-all duration-300 shadow-[0_2px_4px_rgba(0,0,0,0.04),0_8px_16px_rgba(0,0,0,0.06)] hover:translate-y-[-6px] hover:border-[#26413C] hover:shadow-[0_6px_12px_rgba(0,0,0,0.08),0_20px_40px_rgba(0,0,0,0.1)]">
+              <div className="h-64 bg-[#DBE6E5] flex items-center justify-center text-[#536B79] font-semibold">
+                [RampPups Preview]
+              </div>
+              <div className="p-10">
+                <span className="text-xs text-[#616B61] uppercase tracking-[1.5px] font-semibold">Case Study</span>
+                <h3 className="text-[32px] font-black text-[#03110E] mt-3 mb-5 leading-tight">RampPups: Values-Driven Sponsorship</h3>
+                <p className="text-[15px] text-[#536B79] leading-relaxed mb-7">
+                  Dog rescue sponsorship became crowd favorite. Part of $800K+ sponsorship program. Still running today.
+                </p>
+                <a href="#" className="inline-block text-[#26413C] font-bold text-sm uppercase tracking-[1px] transition-all hover:tracking-[2px]">
+                  View PDF →
+                </a>
+              </div>
+            </div>
+
+            {/* Horizon AI Education - PLACEHOLDER FOR NEW CASE STUDY */}
+            <div className="bg-white border-2 border-[#DBE6E5] rounded-sm overflow-hidden transition-all duration-300 shadow-[0_2px_4px_rgba(0,0,0,0.04),0_8px_16px_rgba(0,0,0,0.06)] hover:translate-y-[-6px] hover:border-[#26413C] hover:shadow-[0_6px_12px_rgba(0,0,0,0.08),0_20px_40px_rgba(0,0,0,0.1)]">
+              <div className="h-64 bg-[#DBE6E5] flex items-center justify-center text-[#536B79] font-semibold">
+                [Horizon Preview]
+              </div>
+              <div className="p-10">
+                <span className="text-xs text-[#616B61] uppercase tracking-[1.5px] font-semibold">Case Study</span>
+                <h3 className="text-[32px] font-black text-[#03110E] mt-3 mb-5 leading-tight">Training 2,000+ Users on AI Fundamentals</h3>
+                <p className="text-[15px] text-[#536B79] leading-relaxed mb-7">
+                  AI education program at Horizon Media. Built curriculum, knowledge systems, and AI-powered workflows.
+                </p>
+                <a href="#" className="inline-block text-[#26413C] font-bold text-sm uppercase tracking-[1px] transition-all hover:tracking-[2px]">
+                  View PDF →
+                </a>
+              </div>
+            </div>
+          </div>
+
+          {/* Additional Work Examples */}
+          <h3 className="text-[36px] font-bold text-[#03110E] mb-10">Additional Work</h3>
+          <div className="grid grid-cols-2 gap-12">
+            {/* Work Example 1 - PLACEHOLDER */}
+            <div className="bg-white border-2 border-[#DBE6E5] rounded-sm overflow-hidden transition-all duration-300 shadow-[0_2px_4px_rgba(0,0,0,0.04),0_8px_16px_rgba(0,0,0,0.06)] hover:translate-y-[-6px] hover:border-[#26413C] hover:shadow-[0_6px_12px_rgba(0,0,0,0.08),0_20px_40px_rgba(0,0,0,0.1)]">
+              <div className="h-64 bg-[#DBE6E5] flex items-center justify-center text-[#536B79] font-semibold">
+                [Work Example 1]
+              </div>
+              <div className="p-10">
+                <span className="text-xs text-[#616B61] uppercase tracking-[1.5px] font-semibold">Work Sample</span>
+                <h3 className="text-[32px] font-black text-[#03110E] mt-3 mb-5 leading-tight">Project Title</h3>
+                <p className="text-[15px] text-[#536B79] leading-relaxed mb-7">
+                  Brief description of the work sample or deliverable.
+                </p>
+                <a href="#" className="inline-block text-[#26413C] font-bold text-sm uppercase tracking-[1px] transition-all hover:tracking-[2px]">
+                  View PDF →
+                </a>
+              </div>
+            </div>
+
+            {/* Work Example 2 - PLACEHOLDER */}
+            <div className="bg-white border-2 border-[#DBE6E5] rounded-sm overflow-hidden transition-all duration-300 shadow-[0_2px_4px_rgba(0,0,0,0.04),0_8px_16px_rgba(0,0,0,0.06)] hover:translate-y-[-6px] hover:border-[#26413C] hover:shadow-[0_6px_12px_rgba(0,0,0,0.08),0_20px_40px_rgba(0,0,0,0.1)]">
+              <div className="h-64 bg-[#DBE6E5] flex items-center justify-center text-[#536B79] font-semibold">
+                [Work Example 2]
+              </div>
+              <div className="p-10">
+                <span className="text-xs text-[#616B61] uppercase tracking-[1.5px] font-semibold">Work Sample</span>
+                <h3 className="text-[32px] font-black text-[#03110E] mt-3 mb-5 leading-tight">Project Title</h3>
+                <p className="text-[15px] text-[#536B79] leading-relaxed mb-7">
+                  Brief description of the work sample or deliverable.
+                </p>
+                <a href="#" className="inline-block text-[#26413C] font-bold text-sm uppercase tracking-[1px] transition-all hover:tracking-[2px]">
+                  View PDF →
+                </a>
+              </div>
+            </div>
+
+            {/* Work Example 3 - PLACEHOLDER */}
+            <div className="bg-white border-2 border-[#DBE6E5] rounded-sm overflow-hidden transition-all duration-300 shadow-[0_2px_4px_rgba(0,0,0,0.04),0_8px_16px_rgba(0,0,0,0.06)] hover:translate-y-[-6px] hover:border-[#26413C] hover:shadow-[0_6px_12px_rgba(0,0,0,0.08),0_20px_40px_rgba(0,0,0,0.1)]">
+              <div className="h-64 bg-[#DBE6E5] flex items-center justify-center text-[#536B79] font-semibold">
+                [Work Example 3]
+              </div>
+              <div className="p-10">
+                <span className="text-xs text-[#616B61] uppercase tracking-[1.5px] font-semibold">Work Sample</span>
+                <h3 className="text-[32px] font-black text-[#03110E] mt-3 mb-5 leading-tight">Project Title</h3>
+                <p className="text-[15px] text-[#536B79] leading-relaxed mb-7">
+                  Brief description of the work sample or deliverable.
+                </p>
+                <a href="#" className="inline-block text-[#26413C] font-bold text-sm uppercase tracking-[1px] transition-all hover:tracking-[2px]">
+                  View PDF →
+                </a>
+              </div>
+            </div>
+
+            {/* Work Example 4 - PLACEHOLDER */}
+            <div className="bg-white border-2 border-[#DBE6E5] rounded-sm overflow-hidden transition-all duration-300 shadow-[0_2px_4px_rgba(0,0,0,0.04),0_8px_16px_rgba(0,0,0,0.06)] hover:translate-y-[-6px] hover:border-[#26413C] hover:shadow-[0_6px_12px_rgba(0,0,0,0.08),0_20px_40px_rgba(0,0,0,0.1)]">
+              <div className="h-64 bg-[#DBE6E5] flex items-center justify-center text-[#536B79] font-semibold">
+                [Work Example 4]
+              </div>
+              <div className="p-10">
+                <span className="text-xs text-[#616B61] uppercase tracking-[1.5px] font-semibold">Work Sample</span>
+                <h3 className="text-[32px] font-black text-[#03110E] mt-3 mb-5 leading-tight">Project Title</h3>
+                <p className="text-[15px] text-[#536B79] leading-relaxed mb-7">
+                  Brief description of the work sample or deliverable.
+                </p>
+                <a href="#" className="inline-block text-[#26413C] font-bold text-sm uppercase tracking-[1px] transition-all hover:tracking-[2px]">
+                  View PDF →
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      {/* About Section */}
+      <section className="bg-[#DBE6E5] -mx-20 py-[140px]" id="about">
+        <div className="grid grid-cols-2 gap-20 max-w-[1100px] mx-auto px-20">
+          <div>
+            <div className="text-[48px] font-bold text-[#536B79] mb-6 leading-tight" style={{ fontFamily: "'Dancing Script', cursive" }}>
+              Background
+            </div>
+            <h3 className="text-[52px] font-black text-[#03110E] mb-8 leading-[1.1]">
+              16+ Years in Product Marketing
+            </h3>
+            <p className="text-[16px] text-[#536B79] leading-relaxed">
+              I've spent 16+ years translating complex products into clear value propositions. Most recently, I led GTM strategy for AI-native platforms and trained over 2,000 users on AI fundamentals. Now I'm focused on using AI to democratize the strategic work that's traditionally been locked behind years of experience. I'm also a marathon runner and long-time foster volunteer with Muddy Paws Rescue. Both keep me grounded and remind me that some of the most important work happens offline.
+            </p>
+          </div>
+
+          <div>
+            <div className="text-[48px] font-bold text-[#536B79] mb-6 leading-tight" style={{ fontFamily: "'Dancing Script', cursive" }}>
+              Focus
+            </div>
+            <h3 className="text-[52px] font-black text-[#03110E] mb-8 leading-[1.1]">
+              Human-Centered AI
+            </h3>
+            <p className="text-[16px] text-[#536B79] leading-relaxed">
+              I'm exploring how AI can augment—not replace—human decision-making in marketing and product strategy. The next frontier isn't just building smarter tools—it's creating AI that unlocks human creativity, amplifies strategic thinking, and keeps us connected to the people we serve.
+            </p>
           </div>
         </div>
+      </section>
 
-        {/* Footer */}
-        <div className="text-center mt-12 text-gray-500 text-sm">
-          <p>© 2026 Leslie Langan. Built with Claude AI and React.</p>
-        </div>
+      <div className="max-w-[1200px] mx-auto px-20">
+        {/* Footer CTA */}
+        <section className="py-[140px] text-center">
+          <h2 className="text-[100px] font-black text-[#26413C] leading-[1.1] mb-12" style={{ letterSpacing: '-3px' }}>
+            Let's<br />Connect
+          </h2>
+          <a 
+            href="https://www.linkedin.com/in/leslielangan" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="inline-block px-16 py-6 bg-[#26413C] text-white text-sm font-bold uppercase tracking-[2px] rounded-sm transition-all hover:bg-[#1a2d29] hover:shadow-[0_8px_24px_rgba(38,65,60,0.3)]"
+          >
+            View LinkedIn
+          </a>
+        </section>
       </div>
     </div>
   );
