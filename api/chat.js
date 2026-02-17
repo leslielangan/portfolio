@@ -1,22 +1,26 @@
 export default async function handler(req, res) {
-  // Only allow POST requests
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-
-  // Enable CORS
+  // Enable CORS - must be set first
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Authorization');
 
   // Handle preflight request
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
 
+  // Only allow POST requests
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
   try {
     const { messages, systemPrompt } = req.body;
+
+    if (!messages || !systemPrompt) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
 
     // Call Anthropic API
     const response = await fetch('https://api.anthropic.com/v1/messages', {
